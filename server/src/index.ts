@@ -6,6 +6,8 @@ import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db";
 
+import authRoutes from "./routes/auth";
+
 dotenv.config();
 
 const app = express();
@@ -22,6 +24,8 @@ app.use(
 );
 
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
+
+app.use("/api/auth", authRoutes);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
