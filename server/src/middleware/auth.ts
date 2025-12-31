@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { verifyAccessToken } from "../utils/jwt";
+import { verifyAccessToken } from "../utils/tokens";
 
 export type AuthedRequest = Request & { userId?: string };
 
@@ -10,7 +10,7 @@ export function requireAuth(req: AuthedRequest, res: Response, next: NextFunctio
   try {
     const decoded = verifyAccessToken(token);
     req.userId = decoded.userId;
-    next();
+    return next();
   } catch {
     return res.status(401).json({ error: "Unauthorized" });
   }
