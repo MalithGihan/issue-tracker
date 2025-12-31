@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
-import { Issue } from "../models/Issue";
-import { requireAuth, AuthedRequest } from "../middleware/auth";
+import { Issue } from "../../models/Issue";
+import { requireAuth, AuthedRequest } from "../../middleware/auth";
 import mongoose from "mongoose";
 
 const router = Router();

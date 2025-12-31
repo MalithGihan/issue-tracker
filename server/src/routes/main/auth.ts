@@ -1,9 +1,9 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { User } from "../models/User";
-import { signAccessToken } from "../utils/jwt";
-import { requireAuth, AuthedRequest } from "../middleware/auth";
+import { User } from "../../models/User";
+import { signAccessToken } from "../../utils/jwt";
+import { requireAuth, AuthedRequest } from "../../middleware/auth";
 
 const router = Router();
 
@@ -17,12 +17,13 @@ router.post("/register", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: "Invalid input" });
 
   const { email, password } = parsed.data;
+  const emailNorm = email.trim().toLowerCase();
 
-  const exists = await User.findOne({ email });
+  const exists = await User.findOne({ email: emailNorm });
   if (exists) return res.status(409).json({ error: "Email already exists" });
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, passwordHash });
+  const user = await User.create({ email: emailNorm, passwordHash });
 
   const token = signAccessToken({ userId: user._id.toString() });
 
@@ -41,8 +42,10 @@ router.post("/login", async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: "Invalid input" });
 
   const { email, password } = parsed.data;
+  const emailNorm = email.trim().toLowerCase();
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: emailNorm });
+
   if (!user) return res.status(401).json({ error: "Invalid credentials" });
 
   const ok = await bcrypt.compare(password, user.passwordHash);
