@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import { connectDB } from "./config/db";
 
 dotenv.config();
 
@@ -26,3 +27,15 @@ app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 const port = Number(process.env.SERVER_PORT || 4000);
 app.listen(port, () => console.log(`API running on :${port}`));
+
+async function start() {
+  try {
+    await connectDB();
+    app.listen(port, () => console.log(`API running on :${port}`));
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+start();
