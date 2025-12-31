@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { connectDB } from "./config/db";
 
 import authRoutes from "./routes/auth";
+import issuesRoutes from "./routes/issues";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(
 app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 
 app.use("/api/auth", authRoutes);
+app.use("/api/issues", issuesRoutes);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
