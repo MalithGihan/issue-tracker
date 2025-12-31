@@ -26,7 +26,6 @@ app.use(rateLimit({ windowMs: 60_000, max: 120 }));
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 const port = Number(process.env.SERVER_PORT || 4000);
-app.listen(port, () => console.log(`API running on :${port}`));
 
 async function start() {
   try {
