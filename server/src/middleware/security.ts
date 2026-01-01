@@ -3,14 +3,43 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import hpp from "hpp";
 import pinoHttp from "pino-http";
+import pino from "pino";
 import crypto from "crypto";
+import path from "path";
+
+const logPath = path.join(process.cwd(), "logs", "server.log");
+const logger = pino(
+  {
+    level: process.env.LOG_LEVEL || "info",
+    redact: {
+      paths: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        "res.headers.set-cookie",
+      ],
+      remove: true,
+    },
+  },
+  pino.destination({ dest: logPath, sync: false })
+);
 
 export function applySecurity(app: Express) {
   app.disable("x-powered-by");
-
   app.use(pinoHttp());
-
   app.use(helmet());
+
+  app.use(
+    pinoHttp({
+      logger,
+      genReqId: (req) =>
+        (req.headers["x-request-id"] as string) || crypto.randomUUID(),
+      customLogLevel: (_req, res, err) => {
+        if (err || res.statusCode >= 500) return "error";
+        if (res.statusCode >= 400) return "warn";
+        return "info";
+      },
+    })
+  );
 
   app.use(
     rateLimit({
@@ -44,21 +73,22 @@ export function applySecurity(app: Express) {
   });
 
   app.use(
-  pinoHttp({
-    genReqId: (req) => (req.headers["x-request-id"] as string) || crypto.randomUUID(),
-    redact: {
-      paths: [
-        "req.headers.authorization",
-        "req.headers.cookie",
-        "res.headers.set-cookie",
-      ],
-      remove: true,
-    },
-    customLogLevel: (_req, res, err) => {
-      if (err || res.statusCode >= 500) return "error";
-      if (res.statusCode >= 400) return "warn";
-      return "info";
-    },
-  })
-);
+    pinoHttp({
+      genReqId: (req) =>
+        (req.headers["x-request-id"] as string) || crypto.randomUUID(),
+      redact: {
+        paths: [
+          "req.headers.authorization",
+          "req.headers.cookie",
+          "res.headers.set-cookie",
+        ],
+        remove: true,
+      },
+      customLogLevel: (_req, res, err) => {
+        if (err || res.statusCode >= 500) return "error";
+        if (res.statusCode >= 400) return "warn";
+        return "info";
+      },
+    })
+  );
 }
