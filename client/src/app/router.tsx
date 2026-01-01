@@ -15,19 +15,24 @@ import IssueDetailPage from "../pages/app/IssueDetailPage";
 import AnalyticsPage from "../pages/app/AnalyticsPage";
 import SettingsPage from "../pages/app/SettingsPage";
 import IssueEditPage from "../pages/app/IssueEditPage";
+import ErrorPage from "../pages/ErrorPage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
     element: <MarketingLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <LandingPage /> },
       { path: "/features", element: <PlaceholderPage title="Features" /> },
       { path: "/pricing", element: <PlaceholderPage title="Pricing" /> },
       { path: "/contact", element: <PlaceholderPage title="Contact" /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
   {
     path: "/app",
+    errorElement: <ErrorPage />,
     element: (
       <ProtectedRoute>
         <DashboardLayout />
@@ -41,6 +46,7 @@ export const router = createBrowserRouter([
       { path: "analytics", element: <AnalyticsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "issues/:id/edit", element: <IssueEditPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
   {
@@ -48,6 +54,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
-  }
+  },
 ]);
