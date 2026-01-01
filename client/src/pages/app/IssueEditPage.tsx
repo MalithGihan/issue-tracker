@@ -8,6 +8,8 @@ import {
 } from "../../features/issues/issuesApi";
 import toast from "react-hot-toast";
 import { getRtkErrorMessage } from "../../lib/rtkError";
+import { issueUpdateSchema } from "../../lib/schemas";
+import { firstZodError } from "../../lib/zodError";
 
 export default function IssueEditPage() {
   const nav = useNavigate();
@@ -21,21 +23,28 @@ export default function IssueEditPage() {
   if (!data?.ok) return <div>Not found</div>;
 
   return (
-  <IssueEditForm
-    key={issueId}
-    issue={data.issue}
-    onSave={async (patch) => {
-      const r = await updateIssue({ id: issueId, patch });
-      if ("error" in r) {
-        toast.error(getRtkErrorMessage(r.error, "Update failed"));
-        return; // Just return, don't return the toast result
-      }
-      toast.success("Issue updated");
-      nav(`/app/issues/${issueId}`, { replace: true });
-    }}
-    saving={saving}
-  />
-);
+    <IssueEditForm
+      key={issueId}
+      issue={data.issue}
+      onSave={async (patch) => {
+        const parsed = issueUpdateSchema.safeParse(patch);
+        if (!parsed.success) {
+          toast.error(firstZodError(parsed.error));
+          return;
+        }
+
+        const r = await updateIssue({ id: issueId, patch: parsed.data });
+        if ("error" in r) {
+          toast.error(getRtkErrorMessage(r.error, "Update failed"));
+          return;
+        }
+
+        toast.success("Issue updated");
+        nav(`/app/issues/${issueId}`, { replace: true });
+      }}
+      saving={saving}
+    />
+  );
 }
 
 function IssueEditForm({

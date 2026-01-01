@@ -6,6 +6,8 @@ import {
 } from "../../features/issues/issuesApi";
 import { getRtkErrorMessage } from "../../lib/rtkError";
 import toast from "react-hot-toast";
+import { firstZodError } from "../../lib/zodError";
+import { issueCreateSchema } from "../../lib/schemas";
 
 export default function IssueCreatePage() {
   const nav = useNavigate();
@@ -17,7 +19,14 @@ export default function IssueCreatePage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const r = await createIssue({ title, description, priority });
+    const parsed = issueCreateSchema.safeParse({
+      title,
+      description,
+      priority,
+    });
+    if (!parsed.success) return toast.error(firstZodError(parsed.error));
+
+    const r = await createIssue(parsed.data);
     if ("error" in r)
       return toast.error(getRtkErrorMessage(r.error, "Create failed"));
     toast.success("Issue created");

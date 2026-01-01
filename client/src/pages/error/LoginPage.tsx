@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useRegisterMutation } from "../../features/auth/authApi";
-import { getRtkErrorMessage } from "../../lib/rtkError";
+import { useLoginMutation } from "../../features/auth/authApi";
 import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
+import { loginSchema } from "../../features/validators";
+import { firstZodError } from "../../lib/zodError";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const nav = useNavigate();
-  const [register, { isLoading }] = useRegisterMutation();
+  const [login, { isLoading }] = useLoginMutation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,18 +16,20 @@ export default function RegisterPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    const r = await register({ email, password });
-    if ("error" in r)
-      return toast.error(getRtkErrorMessage(r.error, "Register failed"));
-    toast.success("Account created");
+    const parsed = loginSchema.safeParse({ email, password });
+    if (!parsed.success) return toast.error(firstZodError(parsed.error));
 
-    // after register, go to dashboard
+    const r = await login(parsed.data);
+    if ("error" in r)
+      return toast.error(getRtkErrorMessage(r.error, "Login failed"));
+
+    toast.success("Logged in");
     nav("/app", { replace: true });
   }
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <div className="text-lg font-semibold">Create account</div>
+      <div className="text-lg font-semibold">Login</div>
 
       <input
         className="w-full rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3"
@@ -37,24 +41,24 @@ export default function RegisterPage() {
 
       <input
         className="w-full rounded-xl border border-zinc-300 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-3"
-        placeholder="Password (min 8 chars)"
+        placeholder="Password"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        autoComplete="new-password"
+        autoComplete="current-password"
       />
 
       <button
         disabled={isLoading}
-        className="w-full rounded-xl bg-black text-white dark:bg-white dark:text-black p-3"
+        className="w-full rounded-xl bg-white text-black p-3"
       >
-        {isLoading ? "Loading..." : "Sign up"}
+        {isLoading ? "Loading..." : "Login"}
       </button>
 
       <div className="text-sm text-zinc-500 dark:text-zinc-400">
-        Already have an account?{" "}
-        <Link className="text-black dark:text-white underline" to="/login">
-          Login
+        No account?{" "}
+        <Link className="text-black dark:text-white underline" to="/register">
+          Sign up
         </Link>
       </div>
     </form>
