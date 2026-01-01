@@ -3,6 +3,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import hpp from "hpp";
 import pinoHttp from "pino-http";
+import crypto from "crypto";
 
 export function applySecurity(app: Express) {
   app.disable("x-powered-by");
@@ -41,4 +42,23 @@ export function applySecurity(app: Express) {
     }
     next();
   });
+
+  app.use(
+  pinoHttp({
+    genReqId: (req) => (req.headers["x-request-id"] as string) || crypto.randomUUID(),
+    redact: {
+      paths: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        "res.headers.set-cookie",
+      ],
+      remove: true,
+    },
+    customLogLevel: (_req, res, err) => {
+      if (err || res.statusCode >= 500) return "error";
+      if (res.statusCode >= 400) return "warn";
+      return "info";
+    },
+  })
+);
 }
