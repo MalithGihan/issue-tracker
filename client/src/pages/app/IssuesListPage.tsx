@@ -1,11 +1,21 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useListIssuesQuery } from "../../features/issues/issuesApi";
+import { useDebouncedValue } from "../../lib/useDebouncedValue";
 
 export default function IssuesListPage() {
   const [sp, setSp] = useSearchParams();
 
-  const q = sp.get("q") || "";
+  const qFromUrl = sp.get("q") || "";
+  const [qInput, setQInput] = useState(qFromUrl);
+
+  // keep input updated if user navigates back/forward
+  useEffect(() => {
+    setQInput(qFromUrl);
+  }, [qFromUrl]);
+
+  const qDebounced = useDebouncedValue(qInput, 400);
+
   const status = sp.get("status") || "";
   const priority = sp.get("priority") || "";
   const page = Number(sp.get("page") || "1");
@@ -13,14 +23,26 @@ export default function IssuesListPage() {
 
   const params = useMemo(
     () => ({
-      q: q || undefined,
+      q: qDebounced.trim() ? qDebounced.trim() : undefined,
       status: status || undefined,
       priority: priority || undefined,
       page,
       limit,
     }),
-    [q, status, priority, page, limit]
+    [qDebounced, status, priority, page, limit]
   );
+
+  useEffect(() => {
+    const next = new URLSearchParams(sp);
+
+    const cleaned = qDebounced.trim();
+    if (!cleaned) next.delete("q");
+    else next.set("q", cleaned);
+
+    next.set("page", "1"); 
+    setSp(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qDebounced]);
 
   const { data, isLoading, isError } = useListIssuesQuery(params);
 
@@ -41,7 +63,10 @@ export default function IssuesListPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Issues</h2>
-        <Link to="/app/issues/new" className="rounded-lg border px-3 py-2 text-sm">
+        <Link
+          to="/app/issues/new"
+          className="rounded-lg border px-3 py-2 text-sm"
+        >
           New Issue
         </Link>
       </div>
@@ -50,16 +75,24 @@ export default function IssuesListPage() {
         <input
           className="rounded-lg border p-2 text-sm bg-transparent"
           placeholder="Search..."
-          value={q}
-          onChange={(e) => setParam("q", e.target.value)}
+          value={qInput}
+          onChange={(e) => setQInput(e.target.value)}
         />
-        <select className="rounded-lg border p-2 text-sm bg-transparent" value={status} onChange={(e) => setParam("status", e.target.value)}>
+        <select
+          className="rounded-lg border p-2 text-sm bg-transparent"
+          value={status}
+          onChange={(e) => setParam("status", e.target.value)}
+        >
           <option value="">All status</option>
           <option value="OPEN">OPEN</option>
           <option value="IN_PROGRESS">IN_PROGRESS</option>
           <option value="RESOLVED">RESOLVED</option>
         </select>
-        <select className="rounded-lg border p-2 text-sm bg-transparent" value={priority} onChange={(e) => setParam("priority", e.target.value)}>
+        <select
+          className="rounded-lg border p-2 text-sm bg-transparent"
+          value={priority}
+          onChange={(e) => setParam("priority", e.target.value)}
+        >
           <option value="">All priority</option>
           <option value="LOW">LOW</option>
           <option value="MEDIUM">MEDIUM</option>
@@ -84,7 +117,9 @@ export default function IssuesListPage() {
             <div className="col-span-5">{it.title}</div>
             <div className="col-span-3">{it.status}</div>
             <div className="col-span-2">{it.priority}</div>
-            <div className="col-span-2">{new Date(it.updatedAt).toLocaleDateString()}</div>
+            <div className="col-span-2">
+              {new Date(it.updatedAt).toLocaleDateString()}
+            </div>
           </Link>
         ))}
       </div>
