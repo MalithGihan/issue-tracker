@@ -5,7 +5,7 @@ import ProtectedRoute from "../components/ProtectedRoute";
 
 import LandingPage from "../pages/public/LandingPage";
 import PlaceholderPage from "../pages/public/PlaceholderPage";
-import DashboardHome from "./DashboardHome";
+import DashboardHome from "../pages/app/DashboardHome";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";

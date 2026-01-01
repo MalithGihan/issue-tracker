@@ -28,9 +28,11 @@ export type IssuesListResponse = {
 };
 
 export type StatsResponse = {
-  ok: boolean;
-  stats: Record<string, number>;
+  ok?: boolean;
+  stats?: Record<string, number>;
+  byStatus?: Record<string, number>;
 };
+
 
 export const issuesApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
