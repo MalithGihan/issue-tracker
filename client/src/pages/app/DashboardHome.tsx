@@ -20,8 +20,6 @@ export default function DashboardHome() {
   const resolved = Number(stats?.RESOLVED ?? 0);
   const total = open + inProgress + resolved;
 
-  console.log(data)
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
