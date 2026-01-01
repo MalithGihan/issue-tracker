@@ -29,9 +29,18 @@ export type IssuesListResponse = {
 
 export type StatsResponse = {
   ok?: boolean;
-  stats?: Record<string, number>;
+  stats?: Record<string, number>;      // keep old support
   byStatus?: Record<string, number>;
+  byPriority?: Record<string, number>;
+  recent?: Array<{
+    _id: string;
+    title: string;
+    status: string;
+    priority: string;
+    updatedAt: string;
+  }>;
 };
+
 
 
 export const issuesApi = baseApi.injectEndpoints({

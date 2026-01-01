@@ -1,11 +1,11 @@
+import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
-import StatusChart from "../../components/StatusChart";
+import BarChartCard from "../../components/BarChartCard";
 
 export default function AnalyticsPage() {
   const { data, isLoading, isError, refetch } = useStatsQuery();
 
   if (isLoading) return <div>Loading stats...</div>;
-
   if (isError || !data) {
     return (
       <div className="space-y-3">
@@ -17,30 +17,57 @@ export default function AnalyticsPage() {
     );
   }
 
-  // Support both shapes: { stats } or { byStatus } (your backend returns byStatus)
-  const raw = (data.stats ?? data.byStatus ?? {}) as Record<string, number>;
+  const ok = data.ok ?? true;
 
-  const chartData = [
-    { name: "OPEN", value: Number(raw.OPEN ?? 0) },
-    { name: "IN_PROGRESS", value: Number(raw.IN_PROGRESS ?? 0) },
-    { name: "RESOLVED", value: Number(raw.RESOLVED ?? 0) },
+  const byStatus = (data.byStatus ?? data.stats ?? {}) as Record<string, number>;
+  const byPriority = (data.byPriority ?? {}) as Record<string, number>;
+  const recent = data.recent ?? [];
+
+  const statusData = [
+    { name: "OPEN", value: Number(byStatus.OPEN ?? 0) },
+    { name: "IN_PROGRESS", value: Number(byStatus.IN_PROGRESS ?? 0) },
+    { name: "RESOLVED", value: Number(byStatus.RESOLVED ?? 0) },
   ];
 
-  const total = chartData.reduce((a, b) => a + b.value, 0);
+  const priorityData = [
+    { name: "LOW", value: Number(byPriority.LOW ?? 0) },
+    { name: "MEDIUM", value: Number(byPriority.MEDIUM ?? 0) },
+    { name: "HIGH", value: Number(byPriority.HIGH ?? 0) },
+  ];
+
+  if (!ok) return <div>Stats unavailable.</div>;
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Analytics</h2>
-        <div className="text-sm text-zinc-500 dark:text-zinc-400">Total: {total}</div>
+      <h2 className="text-xl font-semibold">Analytics</h2>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BarChartCard title="Issues by status" data={statusData} />
+        <BarChartCard title="Issues by priority" data={priorityData} />
       </div>
 
-      <StatusChart data={chartData} />
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
+        <div className="text-sm font-semibold mb-3">Recent issues</div>
 
-      {/* keep a raw dump for debugging (you can remove later) */}
-      <pre className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 text-sm overflow-auto">
-        {JSON.stringify(raw, null, 2)}
-      </pre>
+        {recent.length === 0 ? (
+          <div className="text-sm text-zinc-500">No recent issues.</div>
+        ) : (
+          <div className="space-y-2">
+            {recent.map((it) => (
+              <Link
+                key={it._id}
+                to={`/app/issues/${it._id}`}
+                className="block rounded-lg border border-zinc-200 dark:border-zinc-800 p-3 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+              >
+                <div className="font-medium">{it.title}</div>
+                <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {it.status} • {it.priority} • {new Date(it.updatedAt).toLocaleString()}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
