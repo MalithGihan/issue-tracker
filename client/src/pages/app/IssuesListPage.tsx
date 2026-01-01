@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useListIssuesQuery } from "../../features/issues/issuesApi";
 import { useDebouncedValue } from "../../lib/useDebouncedValue";
+import Skeleton from "../../components/loading/Skeleton";
+import EmptyState from "../../components/loading/EmptyState";
 
 export default function IssuesListPage() {
   const [sp, setSp] = useSearchParams();
@@ -39,7 +41,7 @@ export default function IssuesListPage() {
     if (!cleaned) next.delete("q");
     else next.set("q", cleaned);
 
-    next.set("page", "1"); 
+    next.set("page", "1");
     setSp(next, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qDebounced]);
@@ -54,10 +56,45 @@ export default function IssuesListPage() {
     setSp(next);
   }
 
-  if (isLoading) return <div>Loading issues...</div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-7 w-40" />
+          <Skeleton className="h-9 w-24" />
+        </div>
+
+        <div className="flex flex-col gap-2 md:flex-row">
+          <Skeleton className="h-10 w-full md:w-72" />
+          <Skeleton className="h-10 w-full md:w-48" />
+          <Skeleton className="h-10 w-full md:w-48" />
+        </div>
+
+        <div className="rounded-xl border overflow-hidden">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="p-3 border-b">
+              <Skeleton className="h-4 w-2/3" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (isError || !data?.ok) return <div>Failed to load issues.</div>;
 
   const meta = data.meta;
+
+  if (data.issues.length === 0) {
+    return (
+      <EmptyState
+        title="No issues found"
+        message="Try changing filters or create a new issue."
+        actionLabel="Create issue"
+        actionTo="/app/issues/new"
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">

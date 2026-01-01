@@ -5,6 +5,8 @@ import { useDeleteIssueMutation } from "../../features/issues/issuesApi";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getRtkErrorMessage } from "../../lib/rtkError";
+import Skeleton from "../../components/loading/Skeleton";
+import EmptyState from "../../components/loading/EmptyState";
 
 export default function IssueDetailPage() {
   const { id } = useParams();
@@ -13,8 +15,27 @@ export default function IssueDetailPage() {
   const { data: me } = useMeQuery();
   const [del, { isLoading: deleting }] = useDeleteIssueMutation();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (!data?.ok) return <div>Not found.</div>;
+  if (isLoading) {
+    return (
+      <div className="space-y-3 max-w-2xl">
+        <Skeleton className="h-8 w-2/3" />
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
+  }
+
+  if (!data?.ok) {
+    return (
+      <EmptyState
+        title="Issue not found"
+        message="It may have been deleted or the link is wrong."
+        actionLabel="Back to issues"
+        actionTo="/app/issues"
+      />
+    );
+  }
 
   const it = data.issue;
   const isOwner = me?.userId && it.createdBy === me.userId;

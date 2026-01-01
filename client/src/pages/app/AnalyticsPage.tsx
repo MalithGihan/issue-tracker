@@ -1,16 +1,35 @@
 import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
 import BarChartCard from "../../components/BarChartCard";
+import EmptyState from "../../components/loading/EmptyState";
+import Skeleton from "../../components/loading/Skeleton";
 
 export default function AnalyticsPage() {
   const { data, isLoading, isError, refetch } = useStatsQuery();
 
-  if (isLoading) return <div>Loading stats...</div>;
+  if (isLoading) {
+    return (
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border p-4">
+          <Skeleton className="h-6 w-40" />
+          <Skeleton className="mt-4 h-64 w-full" />
+        </div>
+        <div className="rounded-2xl border p-4">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="mt-4 h-64 w-full" />
+        </div>
+      </div>
+    );
+  }
+
   if (isError || !data) {
     return (
       <div className="space-y-3">
         <div>Failed to load stats.</div>
-        <button className="rounded-lg border px-3 py-2 text-sm" onClick={() => refetch()}>
+        <button
+          className="rounded-lg border px-3 py-2 text-sm"
+          onClick={() => refetch()}
+        >
           Retry
         </button>
       </div>
@@ -19,7 +38,10 @@ export default function AnalyticsPage() {
 
   const ok = data.ok ?? true;
 
-  const byStatus = (data.byStatus ?? data.stats ?? {}) as Record<string, number>;
+  const byStatus = (data.byStatus ?? data.stats ?? {}) as Record<
+    string,
+    number
+  >;
   const byPriority = (data.byPriority ?? {}) as Record<string, number>;
   const recent = data.recent ?? [];
 
@@ -36,6 +58,22 @@ export default function AnalyticsPage() {
   ];
 
   if (!ok) return <div>Stats unavailable.</div>;
+
+  const hasAny =
+    statusData.some((x) => x.value > 0) ||
+    priorityData.some((x) => x.value > 0) ||
+    recent.length > 0;
+
+  if (!hasAny) {
+    return (
+      <EmptyState
+        title="No analytics yet"
+        message="Create a few issues to see charts and recent activity."
+        actionLabel="Create issue"
+        actionTo="/app/issues/new"
+      />
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -61,7 +99,8 @@ export default function AnalyticsPage() {
               >
                 <div className="font-medium">{it.title}</div>
                 <div className="text-xs text-zinc-500 dark:text-zinc-400">
-                  {it.status} • {it.priority} • {new Date(it.updatedAt).toLocaleString()}
+                  {it.status} • {it.priority} •{" "}
+                  {new Date(it.updatedAt).toLocaleString()}
                 </div>
               </Link>
             ))}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
+import Skeleton from "../../components/loading/Skeleton";
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (
@@ -13,7 +14,7 @@ function StatCard({ label, value }: { label: string; value: number }) {
 export default function DashboardHome() {
   const { data, isLoading, isError, refetch } = useStatsQuery();
 
-  const ok = data ? (data.ok ?? true) : false;
+  const ok = data ? data.ok ?? true : false;
   const stats = (data?.stats ?? data?.byStatus ?? {}) as Record<string, number>;
   const open = Number(stats?.OPEN ?? 0);
   const inProgress = Number(stats?.IN_PROGRESS ?? 0);
@@ -29,7 +30,19 @@ export default function DashboardHome() {
         </Link>
       </div>
 
-      {isLoading && <div className="text-sm text-zinc-500">Loading stats...</div>}
+      {isLoading && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4"
+            >
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="mt-3 h-9 w-16" />
+            </div>
+          ))}
+        </div>
+      )}
 
       {(isError || (data && !data.ok)) && (
         <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 p-4">
@@ -57,13 +70,22 @@ export default function DashboardHome() {
               Quick actions
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Link className="rounded-lg border px-3 py-2 text-sm" to="/app/issues/new">
+              <Link
+                className="rounded-lg border px-3 py-2 text-sm"
+                to="/app/issues/new"
+              >
                 Create issue
               </Link>
-              <Link className="rounded-lg border px-3 py-2 text-sm" to="/app/issues?status=OPEN&page=1&limit=10">
+              <Link
+                className="rounded-lg border px-3 py-2 text-sm"
+                to="/app/issues?status=OPEN&page=1&limit=10"
+              >
                 View open
               </Link>
-              <Link className="rounded-lg border px-3 py-2 text-sm" to="/app/analytics">
+              <Link
+                className="rounded-lg border px-3 py-2 text-sm"
+                to="/app/analytics"
+              >
                 Analytics
               </Link>
             </div>
