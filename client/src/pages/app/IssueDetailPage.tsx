@@ -3,6 +3,8 @@ import { useGetIssueQuery } from "../../features/issues/issuesApi";
 import { useMeQuery } from "../../features/auth/authApi";
 import { useDeleteIssueMutation } from "../../features/issues/issuesApi";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
 
 export default function IssueDetailPage() {
   const { id } = useParams();
@@ -31,7 +33,7 @@ export default function IssueDetailPage() {
       <div className="rounded-lg border p-3 whitespace-pre-wrap">
         {it.description}
       </div>
-      
+
       {isOwner && (
         <div className="flex gap-2">
           <Link
@@ -46,7 +48,11 @@ export default function IssueDetailPage() {
             onClick={async () => {
               if (!confirm("Delete this issue?")) return;
               const r = await del(it._id);
-              if ("error" in r) return alert("Delete failed");
+              if ("error" in r)
+                return toast.error(
+                  getRtkErrorMessage(r.error, "Delete failed")
+                );
+              toast.success("Issue deleted");
               nav("/app/issues", { replace: true });
             }}
           >

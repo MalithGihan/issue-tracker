@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRegisterMutation } from "../../features/auth/authApi";
+import { getRtkErrorMessage } from "../../lib/rtkError";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const nav = useNavigate();
@@ -13,7 +15,9 @@ export default function RegisterPage() {
     e.preventDefault();
 
     const r = await register({ email, password });
-    if ("error" in r) return alert("Register failed");
+    if ("error" in r)
+      return toast.error(getRtkErrorMessage(r.error, "Register failed"));
+    toast.success("Account created");
 
     // after register, go to dashboard
     nav("/app", { replace: true });
@@ -56,4 +60,3 @@ export default function RegisterPage() {
     </form>
   );
 }
-

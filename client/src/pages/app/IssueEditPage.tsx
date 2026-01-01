@@ -6,6 +6,8 @@ import {
   type IssuePriority,
   type IssueStatus,
 } from "../../features/issues/issuesApi";
+import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
 
 export default function IssueEditPage() {
   const nav = useNavigate();
@@ -18,21 +20,41 @@ export default function IssueEditPage() {
   if (isLoading) return <div>Loading...</div>;
   if (!data?.ok) return <div>Not found</div>;
 
-  // Render the form with a key to reset it when data changes
-  return <IssueEditForm key={issueId} issue={data.issue} onSave={async (patch) => {
-    const r = await updateIssue({ id: issueId, patch });
-    if ("error" in r) return alert("Update failed");
-    nav(`/app/issues/${issueId}`, { replace: true });
-  }} saving={saving} />;
+  return (
+  <IssueEditForm
+    key={issueId}
+    issue={data.issue}
+    onSave={async (patch) => {
+      const r = await updateIssue({ id: issueId, patch });
+      if ("error" in r) {
+        toast.error(getRtkErrorMessage(r.error, "Update failed"));
+        return; // Just return, don't return the toast result
+      }
+      toast.success("Issue updated");
+      nav(`/app/issues/${issueId}`, { replace: true });
+    }}
+    saving={saving}
+  />
+);
 }
 
-function IssueEditForm({ 
-  issue, 
-  onSave, 
-  saving 
-}: { 
-  issue: { title: string; description: string; status: IssueStatus; priority: IssuePriority };
-  onSave: (patch: { title: string; description: string; status: IssueStatus; priority: IssuePriority }) => Promise<void>;
+function IssueEditForm({
+  issue,
+  onSave,
+  saving,
+}: {
+  issue: {
+    title: string;
+    description: string;
+    status: IssueStatus;
+    priority: IssuePriority;
+  };
+  onSave: (patch: {
+    title: string;
+    description: string;
+    status: IssueStatus;
+    priority: IssuePriority;
+  }) => Promise<void>;
   saving: boolean;
 }) {
   const [title, setTitle] = useState(issue.title);
@@ -49,21 +71,34 @@ function IssueEditForm({
     <form onSubmit={onSubmit} className="space-y-3 max-w-xl">
       <h2 className="text-xl font-semibold">Edit Issue</h2>
 
-      <input className="w-full rounded-lg border p-2 bg-transparent"
-        value={title} onChange={(e) => setTitle(e.target.value)} />
+      <input
+        className="w-full rounded-lg border p-2 bg-transparent"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
 
-      <textarea className="w-full rounded-lg border p-2 bg-transparent"
-        rows={5} value={description} onChange={(e) => setDescription(e.target.value)} />
+      <textarea
+        className="w-full rounded-lg border p-2 bg-transparent"
+        rows={5}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
 
-      <select className="w-full rounded-lg border p-2 bg-transparent"
-        value={status} onChange={(e) => setStatus(e.target.value as IssueStatus)}>
+      <select
+        className="w-full rounded-lg border p-2 bg-transparent"
+        value={status}
+        onChange={(e) => setStatus(e.target.value as IssueStatus)}
+      >
         <option value="OPEN">OPEN</option>
         <option value="IN_PROGRESS">IN_PROGRESS</option>
         <option value="RESOLVED">RESOLVED</option>
       </select>
 
-      <select className="w-full rounded-lg border p-2 bg-transparent"
-        value={priority} onChange={(e) => setPriority(e.target.value as IssuePriority)}>
+      <select
+        className="w-full rounded-lg border p-2 bg-transparent"
+        value={priority}
+        onChange={(e) => setPriority(e.target.value as IssuePriority)}
+      >
         <option value="LOW">LOW</option>
         <option value="MEDIUM">MEDIUM</option>
         <option value="HIGH">HIGH</option>

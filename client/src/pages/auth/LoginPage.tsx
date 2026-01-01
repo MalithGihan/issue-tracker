@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoginMutation } from "../../features/auth/authApi";
+import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
 
 export default function LoginPage() {
   const nav = useNavigate();
@@ -13,7 +15,9 @@ export default function LoginPage() {
     e.preventDefault();
 
     const r = await login({ email, password });
-    if ("error" in r) return alert("Login failed");
+    if ("error" in r)
+      return toast.error(getRtkErrorMessage(r.error, "Login failed"));
+    toast.success("Logged in");
 
     nav("/app", { replace: true });
   }
