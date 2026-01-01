@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 type UserDoc = {
   email: string;
   passwordHash: string;
-  refreshTokenHash:string;
+  refreshTokenHash:string | null;
   createdAt: Date;
   updatedAt: Date;
 };

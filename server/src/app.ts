@@ -6,12 +6,14 @@ import { env } from "./config/env";
 import { applySecurity } from "./middleware/security";
 import { notFound, errorHandler } from "./middleware/error";
 import apiRouter from "./routes";
+import { csrfGuard } from "./middleware/csrf";
 
 const app = express();
 
 applySecurity(app); // includes helmet + rate limit + sanitize + hpp + logging
 app.use(express.json());
 app.use(cookieParser());
+app.use(csrfGuard);
 
 app.use(
   cors({

@@ -11,8 +11,11 @@ import {
   verifyRefreshToken,
   hashToken,
 } from "../../utils/tokens";
+import rateLimit from "express-rate-limit";
 
 const router = Router();
+const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });
+const refreshLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
 function setAuthCookies(res: any, accessToken: string, refreshToken: string) {
   res.cookie("access_token", accessToken, {
@@ -44,7 +47,7 @@ const credentialsSchema = z.object({
 });
 
 // POST /api/v1/auth/register
-router.post("/register", async (req, res) => {
+router.post("/register", loginLimiter, async (req, res) => {
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid input" });
 
@@ -68,7 +71,7 @@ router.post("/register", async (req, res) => {
 });
 
 // POST /api/v1/auth/login
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   const parsed = credentialsSchema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: "Invalid input" });
 
@@ -98,13 +101,16 @@ router.get("/me", requireAuth, async (req: AuthedRequest, res) => {
 
 // POST /api/v1/auth/logout
 router.post("/logout", requireAuth, async (req: AuthedRequest, res) => {
-  await User.updateOne({ _id: req.userId }, { $set: { refreshTokenHash: null } });
+  await User.updateOne(
+    { _id: req.userId },
+    { $set: { refreshTokenHash: null } }
+  );
   clearAuthCookies(res);
   return res.json({ ok: true });
 });
 
 // POST /api/v1/auth/refresh
-router.post("/refresh", async (req, res) => {
+router.post("/refresh", refreshLimiter, async (req, res) => {
   const token = req.cookies?.refresh_token;
   if (!token) return res.status(401).json({ error: "Unauthorized" });
 
@@ -116,8 +122,9 @@ router.post("/refresh", async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    // token mismatch => stolen/old token
     if (user.refreshTokenHash !== hashToken(token)) {
+      user.refreshTokenHash = null;
+      await user.save();
       return res.status(401).json({ error: "Unauthorized" });
     }
 
