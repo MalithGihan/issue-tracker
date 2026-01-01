@@ -5,7 +5,7 @@ export const store = configureStore({
   reducer: {
     [baseApi.reducerPath]: baseApi.reducer,
   },
-  middleware: (getDefault) => getDefault().concat(baseApi.middleware),
+  middleware: (gDM) => gDM().concat(baseApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

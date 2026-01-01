@@ -6,9 +6,11 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import LandingPage from "../pages/public/LandingPage";
 import PlaceholderPage from "../pages/public/PlaceholderPage";
 import DashboardHome from "./DashboardHome";
+import AuthLayout from "../layouts/AuthLayout";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
 
 export const router = createBrowserRouter([
-  // ✅ Public marketing site
   {
     element: <MarketingLayout />,
     children: [
@@ -16,12 +18,8 @@ export const router = createBrowserRouter([
       { path: "/features", element: <PlaceholderPage title="Features" /> },
       { path: "/pricing", element: <PlaceholderPage title="Pricing" /> },
       { path: "/contact", element: <PlaceholderPage title="Contact" /> },
-      { path: "/login", element: <PlaceholderPage title="Login (next step)" /> },
-      { path: "/register", element: <PlaceholderPage title="Register (next step)" /> },
     ],
   },
-
-  // ✅ Protected dashboard area
   {
     path: "/app",
     element: (
@@ -34,4 +32,11 @@ export const router = createBrowserRouter([
       // later: { path: "issues", element: <IssuesPage /> }, etc.
     ],
   },
+  {
+  element: <AuthLayout />,
+  children: [
+    { path: "/login", element: <LoginPage /> },
+    { path: "/register", element: <RegisterPage /> },
+  ],
+},
 ]);
