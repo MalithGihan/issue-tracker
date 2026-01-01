@@ -14,7 +14,7 @@ import {
 import rateLimit from "express-rate-limit";
 
 const router = Router();
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10 });
+const loginLimiter = rateLimit({ windowMs: 2 * 60 * 1000, max: 5 });
 const refreshLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
 function setAuthCookies(res: any, accessToken: string, refreshToken: string) {
