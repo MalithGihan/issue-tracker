@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useMeQuery } from "../features/auth/authApi";
+import { useMeQuery } from "../../features/auth/authApi";
 import { Navigate } from "react-router-dom";
 
 export default function AuthGate({ children }: { children: (userId: string) => ReactNode }) {

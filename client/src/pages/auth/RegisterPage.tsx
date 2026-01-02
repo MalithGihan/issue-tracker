@@ -6,43 +6,64 @@ import {
   Lock,
   ArrowRight,
   AlertCircle,
-  Home,
   ArrowLeft,
-  FileQuestion,
+  Home,
   PhoneCall,
+  FileQuestion,
 } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../../features/auth/authApi";
+import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
 
-const loginSchema = Yup.object({
+const registerSchema = Yup.object({
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
+    .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Please confirm your password"),
 });
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const nav = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [registerUser, { isLoading }] = useRegisterMutation();
 
   const formik = useFormik({
     initialValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
-    validationSchema: loginSchema,
-    onSubmit: async (values) => {
-      setIsLoading(true);
+    validationSchema: registerSchema,
+    validateOnBlur: true,
+    validateOnChange: true,
 
-      // Simulate API call - Replace with your actual login logic
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log("Form values:", values);
-        alert(`Login submitted!\nEmail: ${values.email}`);
-      }, 1500);
+    onSubmit: async (values, helpers) => {
+      try {
+        const payload = {
+          email: values.email.trim().toLowerCase(),
+          password: values.password,
+        };
+
+        await registerUser(payload).unwrap();
+
+        toast.success("Account created");
+        nav("/app", { replace: true }); // or nav("/login") if you prefer
+      } catch (err) {
+        toast.error(getRtkErrorMessage(err, "Register failed"));
+      } finally {
+        helpers.setSubmitting(false);
+      }
     },
   });
 
@@ -50,7 +71,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
-          <button className="group flex items-center px-3 py-2 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
+          <button className="group flex items-center px-2 py-1 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
             <span className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4 hidden md:inline-block opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
               <Home className="w-4 h-4" />
@@ -69,9 +90,9 @@ export default function LoginPage() {
             />
           </div>
           <h1 className="text-xl font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent mb-2">
-            Welcome back
+            Create account
           </h1>
-          <p className="text-zinc-500">Enter your credentials to continue</p>
+          <p className="text-zinc-500">Sign up to get started</p>
         </div>
 
         <div className="space-y-5">
@@ -110,20 +131,12 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium text-zinc-700"
-              >
-                Password
-              </label>
-              <button
-                type="button"
-                className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-zinc-700"
+            >
+              Password
+            </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Lock size={18} />
@@ -137,7 +150,7 @@ export default function LoginPage() {
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
                 } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
-                placeholder="Enter your password"
+                placeholder="Min 8 characters"
                 value={formik.values.password}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
@@ -158,20 +171,63 @@ export default function LoginPage() {
             )}
           </div>
 
+          <div className="space-y-2">
+            <label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-zinc-700"
+            >
+              Confirm Password
+            </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                <Lock size={18} />
+              </div>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                  formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-zinc-200 focus:ring-zinc-900"
+                } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
+                placeholder="Confirm your password"
+                value={formik.values.confirmPassword}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {formik.touched.confirmPassword &&
+              formik.errors.confirmPassword && (
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <AlertCircle size={14} />
+                  <span>{String(formik.errors.confirmPassword)}</span>
+                </div>
+              )}
+          </div>
+
           <button
             type="button"
             onClick={() => formik.handleSubmit()}
-            disabled={isLoading}
+            disabled={isLoading || formik.isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
           >
-            {isLoading ? (
+            {isLoading || formik.isSubmitting ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                <span>Signing in...</span>
+                <span>Creating account...</span>
               </>
             ) : (
               <>
-                <span>Sign in</span>
+                <span>Sign up</span>
                 <ArrowRight
                   size={18}
                   className="group-hover:translate-x-1 transition-transform"
@@ -186,7 +242,7 @@ export default function LoginPage() {
             </div>
             <div className="relative flex justify-center text-xs">
               <span className="px-2 bg-white text-zinc-500">
-                or continue with
+                or sign up with
               </span>
             </div>
           </div>
@@ -228,21 +284,21 @@ export default function LoginPage() {
           </div>
 
           <div className="text-center text-sm text-zinc-600">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <a
-              href="/register"
+              href="/login"
               className="font-medium text-zinc-900 hover:underline"
             >
-              Sign up
+              Login
             </a>
           </div>
         </div>
         <div className="absolute flex flex-row gap-2 bottom-8 right-4 md:right-8">
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <PhoneCall className="w-4 h-4 text-black"/>
+            <PhoneCall className="w-4 h-4 text-black" />
           </button>
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <FileQuestion className="w-4 h-4 text-black"/>
+            <FileQuestion className="w-4 h-4 text-black" />
           </button>
         </div>
       </div>

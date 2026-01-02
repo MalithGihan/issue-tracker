@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useMeQuery } from "../features/auth/authApi";
+import { useMeQuery } from "../../features/auth/authApi";
 import type { ReactNode } from "react";
 
 export default function ProtectedRoute({ children }: { children: ReactNode }) {

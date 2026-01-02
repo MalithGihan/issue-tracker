@@ -1,21 +1,21 @@
 import { createBrowserRouter } from "react-router-dom";
 import MarketingLayout from "../layouts/MarketingLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
-import ProtectedRoute from "../components/ProtectedRoute";
+import ProtectedRoute from "../components/Dashboard/ProtectedRoute";
 
 import PlaceholderPage from "../pages/public/PlaceholderPage";
 import DashboardHome from "../pages/app/DashboardHome";
 import AuthLayout from "../layouts/AuthLayout";
-import LoginPage from "../pages/error/LoginPage";
-import RegisterPage from "../pages/error/RegisterPage";
+import LoginPage from "../pages/auth/LoginPage";
+import RegisterPage from "../pages/auth/RegisterPage";
 import IssuesListPage from "../pages/app/IssuesListPage";
 import IssueCreatePage from "../pages/app/IssueCreatePage";
 import IssueDetailPage from "../pages/app/IssueDetailPage";
 import AnalyticsPage from "../pages/app/AnalyticsPage";
 import SettingsPage from "../pages/app/SettingsPage";
 import IssueEditPage from "../pages/app/IssueEditPage";
-import ErrorPage from "../pages/ErrorPage";
-import NotFoundPage from "../pages/NotFoundPage";
+import ErrorPage from "../pages/error/ErrorPage";
+import NotFoundPage from "../pages/error/NotFoundPage";
 import HomePage from "../pages/landing/Home";
 
 export const router = createBrowserRouter([

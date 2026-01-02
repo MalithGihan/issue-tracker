@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
-import BarChartCard from "../../components/BarChartCard";
+import BarChartCard from "../../components/Dashboard/BarChartCard";
 import EmptyState from "../../components/ContentLoaders/EmptyState";
 import Skeleton from "../../components/ContentLoaders/Skeleton";
 

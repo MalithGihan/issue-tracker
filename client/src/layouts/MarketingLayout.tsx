@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import CookieConsent from "../components/CookieConsent";
+import Navbar from "../components/Common/Navbar";
+import Footer from "../components/Common/Footer";
+import CookieConsent from "../components/Common/CookieConsent";
 
 export default function MarketingLayout() {
   return (
