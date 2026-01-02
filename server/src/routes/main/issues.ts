@@ -141,7 +141,29 @@ router.get("/", requireAuth, async (req, res) => {
   });
 });
 
+export async function getStats(_req: any, res: any) {
+  const byStatusAgg = await Issue.aggregate([
+    { $group: { _id: "$status", count: { $sum: 1 } } },
+  ]);
 
+  const byPriorityAgg = await Issue.aggregate([
+    { $group: { _id: "$priority", count: { $sum: 1 } } },
+  ]);
+
+  const byStatus: Record<string, number> = {};
+  for (const row of byStatusAgg) byStatus[row._id] = row.count;
+
+  const byPriority: Record<string, number> = {};
+  for (const row of byPriorityAgg) byPriority[row._id] = row.count;
+
+  const recent = await Issue.find({})
+    .sort({ updatedAt: -1 })
+    .limit(5)
+    .select("_id title status priority updatedAt")
+    .lean();
+
+  return res.json({ ok: true, byStatus, byPriority, recent });
+}
 
 
 export default router;
