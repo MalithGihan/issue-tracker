@@ -134,13 +134,13 @@ export default function DashboardHome() {
                   </span>
                 </div>
               </div>
-              <div className="relative h-3 overflow-hidden rounded-full bg-zinc-100">
+              <div className="relative h-3 overflow-hidden rounded-full bg-orange-500">
                 <div 
                   className="absolute left-0 top-0 h-full bg-green-500 transition-all duration-500"
                   style={{ width: `${(resolved / total) * 100}%` }}
                 />
                 <div 
-                  className="absolute h-full bg-purple-500 transition-all duration-500"
+                  className="absolute h-full bg-blue-500 transition-all duration-500"
                   style={{ 
                     left: `${(resolved / total) * 100}%`,
                     width: `${(inProgress / total) * 100}%` 
@@ -153,11 +153,11 @@ export default function DashboardHome() {
                   <span className="text-zinc-600">Resolved</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-purple-500" />
+                  <div className="h-3 w-3 rounded-full bg-blue-500" />
                   <span className="text-zinc-600">In Progress</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-3 w-3 rounded-full bg-zinc-200" />
+                  <div className="h-3 w-3 rounded-full bg-orange-500" />
                   <span className="text-zinc-600">Open</span>
                 </div>
               </div>

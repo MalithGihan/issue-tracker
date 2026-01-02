@@ -55,11 +55,11 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen mx-auto bg-white text-black overflow-hidden">
+    <div className="min-h-screen mx-auto bg-white text-black">
       <div
         className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
+          background: `radial-gradient(400px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
         }}
       />
 

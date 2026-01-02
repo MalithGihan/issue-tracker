@@ -293,6 +293,7 @@ export default function RegisterPage() {
             </a>
           </div>
         </div>
+        
         <div className="absolute flex flex-row gap-2 bottom-8 right-4 md:right-8">
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
             <PhoneCall className="w-4 h-4 text-black" />

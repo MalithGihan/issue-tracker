@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <AppBootLoader ms={700}>
       <RouterProvider router={router} />
       </AppBootLoader>
-      <Toaster position="top-right" />
+      <Toaster position="bottom-right" />
     </ThemeProvider>
   </Provider>
 );

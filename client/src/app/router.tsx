@@ -10,7 +10,6 @@ import LoginPage from "../pages/auth/LoginPage";
 import RegisterPage from "../pages/auth/RegisterPage";
 import IssuesListPage from "../pages/app/IssuesListPage";
 import IssueCreatePage from "../pages/app/IssueCreatePage";
-import IssueDetailPage from "../pages/app/IssueDetailPage";
 import AnalyticsPage from "../pages/app/AnalyticsPage";
 import SettingsPage from "../pages/app/SettingsPage";
 import IssueEditPage from "../pages/app/IssueEditPage";
@@ -42,7 +41,6 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardHome /> },
       { path: "issues", element: <IssuesListPage /> },
       { path: "issues/new", element: <IssueCreatePage /> },
-      { path: "issues/:id", element: <IssueDetailPage /> },
       { path: "analytics", element: <AnalyticsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "issues/:id/edit", element: <IssueEditPage /> },
