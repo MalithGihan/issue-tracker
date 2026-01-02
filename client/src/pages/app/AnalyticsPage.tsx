@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
 import BarChartCard from "../../components/BarChartCard";
-import EmptyState from "../../components/loading/EmptyState";
-import Skeleton from "../../components/loading/Skeleton";
+import EmptyState from "../../components/ContentLoaders/EmptyState";
+import Skeleton from "../../components/ContentLoaders/Skeleton";
 
 export default function AnalyticsPage() {
   const { data, isLoading, isError, refetch } = useStatsQuery();

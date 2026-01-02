@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CookieConsent from "../components/CookieConsent";
 
-
 export default function MarketingLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-950 text-zinc-100">

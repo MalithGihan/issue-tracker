@@ -16,7 +16,6 @@ import {
   ArrowRight,
   Send
 } from "lucide-react";
-import logo from '../../public/logo/logo.png'
 
 export default function Footer() {
   const [email, setEmail] = useState("");
@@ -92,7 +91,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 group cursor-pointer">
-              <img alt="logo" src={logo} height={25} width={25}/>
+              <img alt="logo" src='../../public/logo/logo.png' height={25} width={25}/>
               <span className="text-base font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent">
                 Issue Tracker
               </span>
@@ -154,7 +153,7 @@ export default function Footer() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="w-full pl-11 pr-4 py-3 bg-white shadow-2xs border border-gray-100 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-200"
+                    className="w-full pl-11 pr-4 py-3 bg-white shadow-2xs border border-gray-100 rounded-lg text-black placeholder-zinc-500 focus:outline-none focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-200"
                     required
                   />
                 </div>
@@ -202,7 +201,7 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4 text-sm text-zinc-500">
-            <span>© {new Date().getFullYear()} Issue Tracker.</span>
+            <span>© {new Date().getFullYear()} Issue Tracker V1.0</span>
             <span className="hidden sm:inline">•</span>
             <span className="hidden sm:inline">All rights reserved.</span>
           </div>

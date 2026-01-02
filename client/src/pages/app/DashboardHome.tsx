@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useStatsQuery } from "../../features/issues/issuesApi";
-import Skeleton from "../../components/loading/Skeleton";
+import Skeleton from "../../components/ContentLoaders/Skeleton";
 
 function StatCard({ label, value }: { label: string; value: number }) {
   return (

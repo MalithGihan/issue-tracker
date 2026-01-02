@@ -1,7 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import { Menu, X, Mail, LogIn, UserPlus } from "lucide-react";
-import logo from '../../public/logo/logo.png'
 
 // Navigation items with categories and descriptions
 const navItems = [
@@ -45,7 +44,7 @@ export default function Navbar() {
     }`;
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/90 border-b border-white/20 shadow-lg">
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white border-b border-white/20 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -53,7 +52,7 @@ export default function Navbar() {
             to="/" 
             className="flex items-center gap-2 font-bold text-lg text-white group"
           >
-            <img alt="logo" src={logo} height={25} width={25}/>
+            <img alt="logo" src='../../public/logo/logo.png' height={25} width={25}/>
           </Link>
 
           {/* Desktop Navigation */}
@@ -126,7 +125,7 @@ export default function Navbar() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? "text-white bg-white/10"
+                        ? "text-black bg-white/10"
                         : "text-zinc-400 hover:text-white hover:bg-white/5"
                     }`
                   }
@@ -135,7 +134,7 @@ export default function Navbar() {
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       {item.name}
-                      <span className="text-xs text-zinc-600 px-2 py-0.5 bg-zinc-800 rounded">
+                      <span className="text-xs text-white px-2 py-0.5 bg-zinc-800 rounded">
                         {item.category}
                       </span>
                     </div>
@@ -152,7 +151,7 @@ export default function Navbar() {
               <Link
                 to="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-zinc-400 hover:text-black transition-all duration-200"
+                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-black transition-all duration-200"
               >
                 <LogIn className="w-4 h-4" />
                 Login
@@ -160,7 +159,7 @@ export default function Navbar() {
               <Link
                 to="/register"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium bg-linear-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-200 shadow-lg shadow-blue-500/20"
+                className="flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium  bg-linear-to-r from-cyan-400 to-green-300 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-200 shadow-lg shadow-blue-500/20"
               >
                 <UserPlus className="w-4 h-4" />
                 Sign up

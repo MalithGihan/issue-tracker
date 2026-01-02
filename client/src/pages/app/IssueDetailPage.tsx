@@ -5,8 +5,8 @@ import { useDeleteIssueMutation } from "../../features/issues/issuesApi";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getRtkErrorMessage } from "../../lib/rtkError";
-import Skeleton from "../../components/loading/Skeleton";
-import EmptyState from "../../components/loading/EmptyState";
+import Skeleton from "../../components/ContentLoaders/Skeleton";
+import EmptyState from "../../components/ContentLoaders/EmptyState";
 
 export default function IssueDetailPage() {
   const { id } = useParams();

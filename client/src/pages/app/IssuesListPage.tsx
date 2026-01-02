@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useListIssuesQuery } from "../../features/issues/issuesApi";
 import { useDebouncedValue } from "../../lib/useDebouncedValue";
-import Skeleton from "../../components/loading/Skeleton";
-import EmptyState from "../../components/loading/EmptyState";
+import Skeleton from "../../components/ContentLoaders/Skeleton";
+import EmptyState from "../../components/ContentLoaders/EmptyState";
 
 export default function IssuesListPage() {
   const [sp, setSp] = useSearchParams();

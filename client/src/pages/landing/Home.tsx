@@ -10,6 +10,7 @@ import {
   Rocket,
   Github,
 } from "lucide-react";
+import { AnimatedCounter } from "../../components/Home/AnimationCounter";
 
 export default function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -47,14 +48,14 @@ export default function HomePage() {
   ];
 
   const stats = [
-    { number: "10K+", label: "Active Users" },
-    { number: "99.9%", label: "Uptime" },
-    { number: "50K+", label: "Issues Resolved" },
-    { number: "24/7", label: "Support" },
+    { number: "10K+", label: "Active Users" , suffix: '+'},
+    { number: "99.9%", label: "Uptime" , suffix: '%'},
+    { number: "50K+", label: "Issues Resolved" , suffix: '+'},
+    { number: "24/7", label: "Support" , suffix: '/7' },
   ];
 
   return (
-    <div className="min-h-screen bg-white text-black overflow-hidden">
+    <div className="min-h-screen mx-auto bg-white text-black overflow-hidden">
       <div
         className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
         style={{
@@ -99,23 +100,26 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-10 mt-20">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-10 my-20">
             {stats.map((stat, index) => (
-              <>
+              <div key={index} className="flex items-center gap-8 md:gap-10">
                 <div
-                  key={index}
-                  className="group cursor-pointer flex-1 min-w-30 text-center"
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className="cursor-pointer flex flex-col min-w-30 text-center"
                 >
-                  <div className="text-3xl sm:text-4xl font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200">
-                    {stat.number}
+                  <div className="text-2xl sm:text-4xl font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200">
+                    <AnimatedCounter
+                      end={stat.number}
+                      duration={2000}
+                      suffix={stat.suffix}
+                    />
                   </div>
                   <div className="text-sm text-zinc-500 mt-2">{stat.label}</div>
                 </div>
+
                 {index < stats.length - 1 && (
-                  <div className="hidden md:block w-px h-16 bg-linear-to-b from-transparent via-black/20 to-transparent" />
+                  <div className="hidden md:block w-px h-16 bg-linear-to-b from-transparent via-zinc-700 to-transparent" />
                 )}
-              </>
+              </div>
             ))}
           </div>
         </div>
@@ -142,21 +146,25 @@ export default function HomePage() {
             <div className="hidden md:block h-px w-full my-4 bg-linear-to-b from-transparent via-black/20 to-transparent" />
           </div>
 
-           <div className="flex flex-col md:flex-row gap-6 items-stretch">
+          <div className="flex flex-col md:flex-row gap-6 items-stretch">
             {features.map((feature, index) => (
               <>
                 <div
                   key={index}
                   className="relative flex flex-col justify-center items-center p-8 cursor-pointer"
-                > 
+                >
                   <div className="relative">
                     <div className="w-12 h-12 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
                       <feature.icon className="w-6 h-6 text-black" />
                     </div>
-                    
-                    <h3 className="text-md font-semibold mb-2 text-black">{feature.title}</h3>
-                    <p className="text-zinc-400 text-sm font-base">{feature.description}</p>
-                    
+
+                    <h3 className="text-md font-semibold mb-2 text-black">
+                      {feature.title}
+                    </h3>
+                    <p className="text-zinc-400 text-sm font-base">
+                      {feature.description}
+                    </p>
+
                     <div className="mt-4 flex items-center gap-2 text-black/60 transition-opacity duration-300">
                       <span className="text-sm">Learn more</span>
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
@@ -176,7 +184,6 @@ export default function HomePage() {
       <section className="relative py-12 px-4 sm:px-6 lg:px-8 mb-10">
         <div className="max-w-6xl mx-auto">
           <div className="relative p-12 bg-gray-50 shadow-2xs border border-white/10 rounded-xl overflow-hidden">
-
             <div className="relative text-center">
               <h2 className="text-2xl sm:text-2xl font-bold mb-4">
                 Ready to get started?
