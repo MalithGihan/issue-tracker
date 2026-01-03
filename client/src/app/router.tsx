@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
       { path: "issues/:id/edit", element: <IssueEditPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
-  },
+  }, 
   {
     element: <AuthLayout />,
     children: [
@@ -55,4 +55,5 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage /> },
     ],
   },
+  { path: "*", element: <NotFoundPage /> },
 ]);

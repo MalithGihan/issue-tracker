@@ -12,9 +12,13 @@ import {
 } from "lucide-react";
 import { DonutChartCard } from "../../components/Charts/DonutChartCard";
 import { PieChartCard } from "../../components/Charts/PieChartCard";
+import { useState } from "react";
+import IssueDetailModal from "./IssueDetailModal";
 
 export default function AnalyticsPage() {
   const { data, isLoading, isError, refetch } = useStatsQuery();
+  const [openDetails, setOpenDetails] = useState(false);
+  const [id, setID] = useState("");
 
   if (isLoading) {
     return (
@@ -267,57 +271,61 @@ export default function AnalyticsPage() {
               };
 
               return (
-                <Link
+                <button
                   key={it._id}
-                  to={`/app/issues/${it._id}`}
-                  className="block rounded-lg border border-zinc-200 p-4 hover:border-zinc-900 hover:bg-zinc-50 transition-all group"
+                  onClick={() => {
+                    setID(it._id);
+                    setOpenDetails(true);
+                  }}
+                  className="w-full rounded-lg border border-zinc-200 p-4 hover:border-zinc-900 hover:bg-zinc-50 transition-all group"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-zinc-900 group-hover:text-zinc-900 truncate">
-                        {it.title}
-                      </div>
-                      <div className="mt-2 flex items-center gap-2 flex-wrap">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                            it.status
-                          )}`}
-                        >
-                          {it.status === "OPEN" && <AlertCircle size={12} />}
-                          {it.status === "IN_PROGRESS" && <Clock size={12} />}
-                          {it.status === "RESOLVED" && (
-                            <CheckCircle size={12} />
-                          )}
-                          {it.status.replace("_", " ")}
-                        </span>
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
-                            it.priority
-                          )}`}
-                        >
-                          {it.priority}
-                        </span>
-                        <span className="text-xs text-zinc-500">
-                          {new Date(it.updatedAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </div>
+                    <div className="font-medium text-zinc-900 group-hover:text-zinc-900 truncate">
+                      {it.title}
                     </div>
+                    <div className="mt-2 flex items-center gap-7 flex-wrap">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                          it.status
+                        )}`}
+                      >
+                        {it.status === "OPEN" && <AlertCircle size={12} />}
+                        {it.status === "IN_PROGRESS" && <Clock size={12} />}
+                        {it.status === "RESOLVED" && <CheckCircle size={12} />}
+                        {it.status.replace("_", " ")}
+                      </span>
+                      <span
+                        className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
+                          it.priority
+                        )}`}
+                      >
+                        {it.priority}
+                      </span>
+                      <span className="text-xs text-zinc-500">
+                        {new Date(it.updatedAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+
                     <ArrowRight
                       size={16}
                       className="text-zinc-400 group-hover:text-zinc-900 transition-colors shrink-0 mt-1"
                     />
                   </div>
-                </Link>
+                </button>
               );
             })}
           </div>
         )}
       </div>
+
+      {openDetails && (
+        <IssueDetailModal id={id} onClose={() => setOpenDetails(false)} />
+      )}
     </div>
   );
 }

@@ -2,24 +2,29 @@ import { Moon, Sun, LogOut, User, Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLogoutMutation } from "../../features/auth/authApi";
 import { useTheme } from "../../theme/useTheme";
+import { useDispatch } from "react-redux";
+import { baseApi } from "../../app/baseApi";
 
 interface TopbarProps {
   userId: string;
+  userName: string;
   isMenuOpen: boolean;
   setIsMenuOpen: (open: boolean) => void;
 }
 
 export default function Topbar({
-  userId,
+  userName,
   isMenuOpen,
   setIsMenuOpen,
 }: TopbarProps) {
   const nav = useNavigate();
   const { theme, toggle } = useTheme();
+  const dispatch = useDispatch();
   const [logout, { isLoading }] = useLogoutMutation();
 
   async function onLogout() {
     await logout();
+    dispatch(baseApi.util.resetApiState());
     nav("/", { replace: true });
   }
 
@@ -62,9 +67,7 @@ export default function Topbar({
       <div className="hidden lg:flex items-center gap-8">
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-200 ">
           <User size={14} className="text-black " />
-          <span className="text-xs font-medium text-black/60 ">
-            {userId.slice(0, 8)}…
-          </span>
+          <span className="text-xs font-medium text-black/60 ">{userName}</span>
         </div>
         <button
           onClick={onToggle}

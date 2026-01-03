@@ -1,16 +1,29 @@
 import { useMeQuery, useLogoutMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
-import { User, LogOut, Shield, Bell, Palette, Database, HelpCircle, AlertCircle } from "lucide-react";
+import {
+  User,
+  LogOut,
+  Shield,
+  Bell,
+  Palette,
+  Database,
+  HelpCircle,
+  AlertCircle,
+} from "lucide-react";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { baseApi } from "../../app/baseApi";
 
 export default function SettingsPage() {
   const nav = useNavigate();
+  const dispatch = useDispatch();
   const { data, isLoading, isError } = useMeQuery();
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = async () => {
     await logout();
+    dispatch(baseApi.util.resetApiState());
     nav("/", { replace: true });
   };
 
@@ -39,7 +52,9 @@ export default function SettingsPage() {
           <AlertCircle size={24} className="text-red-600" />
         </div>
         <h3 className="font-semibold text-red-900">Failed to load settings</h3>
-        <p className="mt-1 text-sm text-red-700">There was an error loading your account information.</p>
+        <p className="mt-1 text-sm text-red-700">
+          There was an error loading your account information.
+        </p>
       </div>
     );
   }
@@ -49,7 +64,9 @@ export default function SettingsPage() {
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-zinc-900">Settings</h1>
-        <p className="my-4 text-xs text-zinc-600">Manage your account settings and preferences</p>
+        <p className="my-4 text-xs text-zinc-600">
+          Manage your account settings and preferences
+        </p>
       </div>
 
       {/* Account Information Section */}
@@ -57,26 +74,50 @@ export default function SettingsPage() {
         <div className="border-b border-zinc-200 bg-zinc-50 px-6 py-4">
           <div className="flex items-center gap-2">
             <User size={20} className="text-zinc-600" />
-            <h2 className="text-lg font-semibold text-zinc-900">Account Information</h2>
+            <h2 className="text-lg font-semibold text-zinc-900">
+              Account Information
+            </h2>
           </div>
         </div>
         <div className="p-6 space-y-4">
-          <div className="flex items-start justify-between p-4 rounded-lg bg-zinc-50 border border-zinc-200">
+          <div className="flex flex-col gap-2 p-4 rounded-lg bg-zinc-50 border border-zinc-200">
             <div className="flex-1">
-              <div className="text-sm font-medium text-zinc-600 mb-1">User ID</div>
+              <div className="text-sm font-medium text-zinc-600 mb-1">
+                User Name
+              </div>
               <div className="text-sm text-zinc-900 font-mono bg-white px-3 py-2 rounded border border-zinc-200">
-                {data?.userId}
+                {data?.user.name}
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-zinc-600 mb-1">
+                User ID
+              </div>
+              <div className="text-sm text-zinc-900 font-mono bg-white px-3 py-2 rounded border border-zinc-200">
+                {data?.user.id}
+              </div>
+            </div>
+            <div className="flex-1">
+              <div className="text-sm font-medium text-zinc-600 mb-1">
+                User Email
+              </div>
+              <div className="text-sm text-zinc-900 font-mono bg-white px-3 py-2 rounded border border-zinc-200">
+                {data?.user.email}
               </div>
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 rounded-lg bg-blue-50 border border-blue-200">
-            <div className="rounded-lg bg-blue-100 p-2 mt-0.5">
-              <Shield size={18} className="text-blue-600" />
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-green-50 border border-green-200">
+            <div className="rounded-lg bg-green-100 p-2 mt-0.5">
+              <Shield size={18} className="text-green-600" />
             </div>
             <div className="flex-1">
-              <div className="text-sm font-semibold text-blue-900">Account Status</div>
-              <div className="text-sm text-blue-700 mt-1">Your account is active and secure</div>
+              <div className="text-sm font-semibold text-black">
+                Account Status
+              </div>
+              <div className="text-sm text-green-700 mt-1">
+                Your account is active and secure
+              </div>
             </div>
           </div>
         </div>
@@ -97,8 +138,12 @@ export default function SettingsPage() {
                 <Bell size={18} className="text-black" />
               </div>
               <div>
-                <div className="text-sm font-medium text-zinc-900">Notifications</div>
-                <div className="text-xs text-zinc-600">Manage notification preferences</div>
+                <div className="text-sm font-medium text-zinc-900">
+                  Notifications
+                </div>
+                <div className="text-xs text-zinc-600">
+                  Manage notification preferences
+                </div>
               </div>
             </div>
             <div className="text-xs text-zinc-500">Coming soon</div>
@@ -110,8 +155,12 @@ export default function SettingsPage() {
                 <Database size={18} className="text-black" />
               </div>
               <div>
-                <div className="text-sm font-medium text-zinc-900">Data & Privacy</div>
-                <div className="text-xs text-zinc-600">Control your data and privacy settings</div>
+                <div className="text-sm font-medium text-zinc-900">
+                  Data & Privacy
+                </div>
+                <div className="text-xs text-zinc-600">
+                  Control your data and privacy settings
+                </div>
               </div>
             </div>
             <div className="text-xs text-zinc-500">Coming soon</div>
@@ -131,11 +180,17 @@ export default function SettingsPage() {
           <div className="p-4 rounded-lg border border-zinc-200 bg-zinc-50">
             <div className="text-sm text-zinc-600">
               Need help? Visit our{" "}
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium underline">
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 font-medium underline"
+              >
                 Help Center
               </a>{" "}
               or{" "}
-              <a href="#" className="text-blue-600 hover:text-blue-700 font-medium underline">
+              <a
+                href="#"
+                className="text-blue-600 hover:text-blue-700 font-medium underline"
+              >
                 Contact Support
               </a>
             </div>
@@ -154,9 +209,12 @@ export default function SettingsPage() {
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-1">Sign Out</h3>
+              <h3 className="text-sm font-semibold text-zinc-900 mb-1">
+                Sign Out
+              </h3>
               <p className="text-sm text-zinc-600">
-                Sign out of your account on this device. You'll need to sign in again to access your issues.
+                Sign out of your account on this device. You'll need to sign in
+                again to access your issues.
               </p>
             </div>
             <button
@@ -180,9 +238,12 @@ export default function SettingsPage() {
                 <LogOut size={24} className="text-red-600" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-zinc-900 mb-2">Sign Out</h3>
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+                  Sign Out
+                </h3>
                 <p className="text-sm text-zinc-600">
-                  Are you sure you want to sign out? You'll need to sign in again to access your account.
+                  Are you sure you want to sign out? You'll need to sign in
+                  again to access your account.
                 </p>
               </div>
             </div>

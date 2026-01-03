@@ -4,10 +4,12 @@ import toast from "react-hot-toast";
 import { AlertCircle, ArrowRight } from "lucide-react";
 import type { ZodError } from "zod";
 import { useFormik } from "formik";
+import { useMemo } from "react";
 
 import {
   useGetIssueQuery,
   useUpdateIssueMutation,
+  useGetAssigneesQuery,
   type IssuePriority,
   type IssueStatus,
 } from "../../features/issues/issuesApi";
@@ -20,6 +22,8 @@ import { useState } from "react";
 type FormValues = {
   title: string;
   description: string;
+  label: string;
+  assignFor: string; // "" means unassigned
   status: IssueStatus;
   priority: IssuePriority;
 };
@@ -73,25 +77,34 @@ export default function IssueEditPage() {
     <>
       <IssueEditForm
         issueId={issueId}
-        issue={data.issue}
+        issue={data.issue as any}
         saving={saving}
         onSave={async (values) => {
+          // Optional: if your schema doesn’t include label/assignFor yet,
+          // we validate required fields only by safeParse, then merge.
           const parsed = issueUpdateSchema.safeParse(values);
           if (!parsed.success) {
             toast.error(firstZodError(parsed.error));
             return;
           }
 
-          const r = await updateIssue({ id: issueId, patch: parsed.data });
+          const patch = {
+            ...parsed.data,
+            label: values.label.trim() ? values.label.trim() : null,
+            assignFor: values.assignFor ? values.assignFor : null,
+          };
+
+          const r = await updateIssue({ id: issueId, patch: patch as any });
           if ("error" in r) {
             toast.error(getRtkErrorMessage(r.error, "Update failed"));
             return;
           }
 
           toast.success("Issue updated");
-          nav("/app/issues", { replace: true })
+          nav("/app/issues", { replace: true });
         }}
       />
+
       {issueDetails && id && (
         <IssueDetailModal id={id} onClose={() => setIssueDetails(false)} />
       )}
@@ -106,19 +119,33 @@ function IssueEditForm({
 }: {
   issueId: string;
   issue: {
+    _id?: string;
     title: string;
     description: string;
+    label?: string | null;
+    assignFor?: { _id?: string; id?: string } | null;
     status: IssueStatus;
     priority: IssuePriority;
   };
   saving: boolean;
   onSave: (values: FormValues) => Promise<void>;
 }) {
+  const { data: assigneesData, isLoading: assigneesLoading } =
+    useGetAssigneesQuery();
+  const users = assigneesData?.users ?? [];
+
+  const initialAssignFor = useMemo(() => {
+    const a = issue.assignFor;
+    return (a?._id || a?.id || "") as string;
+  }, [issue.assignFor]);
+
   const formik = useFormik<FormValues>({
     enableReinitialize: true,
     initialValues: {
       title: issue.title || "",
       description: issue.description || "",
+      label: issue.label ?? "",
+      assignFor: initialAssignFor,
       status: issue.status,
       priority: issue.priority,
     },
@@ -147,7 +174,6 @@ function IssueEditForm({
       </div>
 
       <div className="space-y-5">
-        {/* Title */}
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium text-zinc-700">
             Title
@@ -156,9 +182,7 @@ function IssueEditForm({
             id="title"
             name="title"
             type="text"
-            className={fieldClass(
-              formik.touched.title && !!formik.errors.title
-            )}
+            className={fieldClass(formik.touched.title && !!formik.errors.title)}
             placeholder="E.g. Login page crashes on submit"
             value={formik.values.title}
             onChange={formik.handleChange}
@@ -172,7 +196,6 @@ function IssueEditForm({
           )}
         </div>
 
-        {/* Description */}
         <div className="space-y-2">
           <label
             htmlFor="description"
@@ -200,7 +223,49 @@ function IssueEditForm({
           )}
         </div>
 
-        {/* Status */}
+        <div className="space-y-2">
+          <label htmlFor="label" className="text-sm font-medium text-zinc-700">
+            Label <span className="text-xs text-zinc-500">(optional)</span>
+          </label>
+          <input
+            id="label"
+            name="label"
+            type="text"
+            className={fieldClass(false)}
+            placeholder="E.g. bug, ui, auth"
+            value={formik.values.label}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="assignFor"
+            className="text-sm font-medium text-zinc-700"
+          >
+            Assign to <span className="text-xs text-zinc-500">(optional)</span>
+          </label>
+          <select
+            id="assignFor"
+            name="assignFor"
+            className={fieldClass(false)}
+            value={formik.values.assignFor}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            disabled={assigneesLoading}
+          >
+            <option value="">
+              {assigneesLoading ? "Loading users..." : "Unassigned"}
+            </option>
+            {users.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name} ({u.email})
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="status" className="text-sm font-medium text-zinc-700">
             Status
@@ -208,9 +273,7 @@ function IssueEditForm({
           <select
             id="status"
             name="status"
-            className={fieldClass(
-              formik.touched.status && !!formik.errors.status
-            )}
+            className={fieldClass(formik.touched.status && !!formik.errors.status)}
             value={formik.values.status}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -227,7 +290,6 @@ function IssueEditForm({
           )}
         </div>
 
-        {/* Priority */}
         <div className="space-y-2">
           <label
             htmlFor="priority"
@@ -248,6 +310,7 @@ function IssueEditForm({
             <option value="LOW">LOW</option>
             <option value="MEDIUM">MEDIUM</option>
             <option value="HIGH">HIGH</option>
+            <option value="URGENT">URGENT</option>
           </select>
           {formik.touched.priority && formik.errors.priority && (
             <div className="flex items-center gap-1 text-sm text-red-600">
@@ -257,7 +320,6 @@ function IssueEditForm({
           )}
         </div>
 
-        {/* Submit */}
         <button
           type="submit"
           disabled={saving || formik.isSubmitting}

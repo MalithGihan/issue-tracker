@@ -7,6 +7,7 @@ import type { ZodError } from "zod";
 
 import {
   useCreateIssueMutation,
+  useGetAssigneesQuery,
   type IssuePriority,
 } from "../../features/issues/issuesApi";
 import { getRtkErrorMessage } from "../../lib/rtkError";
@@ -17,6 +18,8 @@ import { useState } from "react";
 type FormValues = {
   title: string;
   description: string;
+  label: string;
+  assignFor: string; 
   priority: IssuePriority;
 };
 
@@ -32,6 +35,12 @@ function zodToFormikErrors<T extends Record<string, any>>(error: ZodError<T>) {
 export default function IssueCreatePage() {
   const nav = useNavigate();
   const [createIssue, { isLoading }] = useCreateIssueMutation();
+
+  const { data: assigneesData, isLoading: assigneesLoading } =
+    useGetAssigneesQuery();
+
+  const users = assigneesData?.users ?? [];
+
   const [issueDetails, setIssueDetails] = useState(false);
   const [id, setID] = useState("");
 
@@ -39,6 +48,8 @@ export default function IssueCreatePage() {
     initialValues: {
       title: "",
       description: "",
+      label: "",
+      assignFor: "",
       priority: "MEDIUM",
     },
 
@@ -57,24 +68,31 @@ export default function IssueCreatePage() {
         return;
       }
 
-      const r = await createIssue(parsed.data);
+      const body = {
+        ...parsed.data,
+        label: values.label.trim() ? values.label.trim() : null,
+        assignFor: values.assignFor ? values.assignFor : null,
+      };
+
+      const r = await createIssue(body as any);
 
       if ("error" in r) {
-        return toast.error(getRtkErrorMessage(r.error, "Create failed"));
+        toast.error(getRtkErrorMessage(r.error, "Create failed"));
+        return;
       }
 
       toast.success("Issue created");
 
-      const id =
+      const newId =
         (r.data as any)?.issue?._id ??
         (r.data as any)?.data?.issue?._id ??
         (r.data as any)?.issueId ??
         (r.data as any)?._id;
 
-      if (!id) return nav("/app/issues", { replace: true });
+      if (!newId) return nav("/app/issues", { replace: true });
 
       setIssueDetails(true);
-      setID(id);
+      setID(newId);
     },
   });
 
@@ -149,6 +167,52 @@ export default function IssueCreatePage() {
         </div>
 
         <div className="space-y-2">
+          <label htmlFor="label" className="text-sm font-medium text-zinc-700">
+            Label <span className="text-xs text-zinc-500">(optional)</span>
+          </label>
+
+          <input
+            id="label"
+            name="label"
+            type="text"
+            className="w-full px-4 py-3 rounded-xl border border-zinc-200 focus:ring-zinc-900 bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+            placeholder="E.g. bug, ui, auth"
+            value={formik.values.label}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+        </div>
+
+        <div className="space-y-2">
+          <label
+            htmlFor="assignFor"
+            className="text-sm font-medium text-zinc-700"
+          >
+            Assign to <span className="text-xs text-zinc-500">(optional)</span>
+          </label>
+
+          <select
+            id="assignFor"
+            name="assignFor"
+            className="w-full text-sm px-4 py-3 rounded-xl border border-zinc-200 focus:ring-zinc-900 bg-white text-zinc-900 focus:outline-none focus:ring-2 focus:border-transparent transition-all"
+            value={formik.values.assignFor}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            disabled={assigneesLoading}
+          >
+            <option value="">
+              {assigneesLoading ? "Loading users..." : "Unassigned"}
+            </option>
+
+            {users.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.name} ({u.email})
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
           <label
             htmlFor="priority"
             className="text-sm font-medium text-zinc-700"
@@ -176,6 +240,9 @@ export default function IssueCreatePage() {
             </option>
             <option value="HIGH" className="text-xs">
               HIGH
+            </option>
+            <option value="URGENT" className="text-xs">
+              URGENT
             </option>
           </select>
 
@@ -209,7 +276,9 @@ export default function IssueCreatePage() {
         </button>
       </div>
 
-      {issueDetails && <IssueDetailModal id={id} onClose={() => setIssueDetails(false)} />}
+      {issueDetails && (
+        <IssueDetailModal id={id} onClose={() => setIssueDetails(false)} />
+      )}
     </form>
   );
 }

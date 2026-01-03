@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import { Inbox, FileQuestion, Search, AlertCircle } from "lucide-react";
+import { Inbox, FileQuestion, Search, AlertCircle, Plus } from "lucide-react";
 
 type Props = {
   title: string;
   message?: string;
   actionLabel?: string;
   actionTo?: string;
-  icon?: "inbox" | "search" | "question" | "alert";
+  icon?: "inbox" | "search" | "question" | "alert" | "plus";
 };
 
 export default function EmptyState({ 
@@ -20,7 +20,8 @@ export default function EmptyState({
     inbox: Inbox,
     search: Search,
     question: FileQuestion,
-    alert: AlertCircle
+    alert: AlertCircle,
+    plus: Plus
   };
 
   const Icon = icons[icon];
