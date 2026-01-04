@@ -21,3 +21,6 @@ coverage/
 .idea/
 .vscode/
 "@ | Set-Content -Encoding UTF8 .gitignore
+
+# files
+server/logs/

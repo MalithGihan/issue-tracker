@@ -49,6 +49,10 @@ app.get("/metrics", async (_req, res) => {
   res.send(await metricsText());
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> bddc868d15ff1a3fca34751377557adf58ab5a7a
 app.use(notFound);
 app.use(errorHandler);
 
