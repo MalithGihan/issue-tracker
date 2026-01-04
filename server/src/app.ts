@@ -19,7 +19,7 @@ const allowedOrigins = String(env.CLIENT_ORIGIN || "")
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // Postman/curl
+    if (!origin) return cb(null, true);
     if (allowedOrigins.includes(origin)) return cb(null, true);
     return cb(new Error(`CORS blocked for origin: ${origin}`));
   },
@@ -39,7 +39,7 @@ app.use(httpMetrics);
 
 app.use(csrfGuard);
 
-app.use("/api/v1", apiRouter);
+app.use("/api", apiRouter);
 
 app.get("/api/v1/health", (_req, res) => res.json({ ok: true }));
 
