@@ -12,7 +12,6 @@ import { metricsText } from "./monitoring/metrics";
 
 const app = express();
 
-
 const allowedOrigins = String(env.CLIENT_ORIGIN || "")
   .split(",")
   .map((s) => s.trim())
@@ -20,7 +19,7 @@ const allowedOrigins = String(env.CLIENT_ORIGIN || "")
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
+    if (!origin) return cb(null, true); // Postman/curl
     if (allowedOrigins.includes(origin)) return cb(null, true);
     return cb(new Error(`CORS blocked for origin: ${origin}`));
   },
@@ -30,7 +29,7 @@ const corsOptions: cors.CorsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); 
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -49,10 +48,6 @@ app.get("/metrics", async (_req, res) => {
   res.send(await metricsText());
 });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> bddc868d15ff1a3fca34751377557adf58ab5a7a
 app.use(notFound);
 app.use(errorHandler);
 
