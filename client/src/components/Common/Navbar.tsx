@@ -52,7 +52,7 @@ export default function Navbar() {
             to="/" 
             className="flex items-center gap-2 font-bold text-lg text-white group"
           >
-            <img alt="logo" src='../../public/logo/logo.png' height={25} width={25}/>
+            <img alt="logo" src="/logo/logo.png" height={25} width={25}/>
           </Link>
 
           {/* Desktop Navigation */}
