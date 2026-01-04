@@ -7,48 +7,36 @@ import pinoHttp from "pino-http";
 import pino from "pino";
 import crypto from "crypto";
 import path from "path";
+import fs from "fs";
 
 const isProd = process.env.NODE_ENV === "production";
 
-/**
- * In production (Render) -> log to stdout (Render collects logs)
- * In dev -> you can still log to a file
- */
-const logger = isProd
-  ? pino({
-      level: process.env.LOG_LEVEL || "info",
-      redact: {
-        paths: [
-          "req.headers.authorization",
-          "req.headers.cookie",
-          "res.headers.set-cookie",
-        ],
-        remove: true,
-      },
-    })
-  : (() => {
-      const logPath = path.join(process.cwd(), "logs", "server.log");
-      return pino(
-        {
-          level: process.env.LOG_LEVEL || "info",
-          redact: {
-            paths: [
-              "req.headers.authorization",
-              "req.headers.cookie",
-              "res.headers.set-cookie",
-            ],
-            remove: true,
-          },
-        },
-        pino.destination({ dest: logPath, sync: false })
-      );
-    })();
+const baseLoggerOptions: pino.LoggerOptions = {
+  level: process.env.LOG_LEVEL || "info",
+  redact: {
+    paths: [
+      "req.headers.authorization",
+      "req.headers.cookie",
+      "res.headers.set-cookie",
+    ],
+    remove: true,
+  },
+};
+
+const logger = (() => {
+  if (isProd) return pino(baseLoggerOptions);
+
+  const logDir = path.join(process.cwd(), "logs");
+  fs.mkdirSync(logDir, { recursive: true });
+
+  const logPath = path.join(logDir, "server.log");
+  return pino(baseLoggerOptions, pino.destination({ dest: logPath, sync: true }));
+})();
 
 export function applySecurity(app: Express) {
   app.disable("x-powered-by");
   app.use(helmet());
 
-  // ✅ Use pino-http ONCE, with your configured logger
   app.use(
     pinoHttp({
       logger,
