@@ -16,6 +16,7 @@ import IssueEditPage from "../pages/app/IssueEditPage";
 import ErrorPage from "../pages/error/ErrorPage";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import HomePage from "../pages/landing/Home";
+import KanbanBoardPage from "../pages/app/KanbanBoardPage";
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
       { path: "analytics", element: <AnalyticsPage /> },
       { path: "settings", element: <SettingsPage /> },
       { path: "issues/:id/edit", element: <IssueEditPage /> },
+      { path: "board", element: <KanbanBoardPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   }, 

@@ -121,7 +121,7 @@ export default function DashboardHome() {
         </div>
         <Link
           to="/app/issues"
-          className="inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-black px-1 md:px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
         >
           <Eye size={16} />
           View All Issues

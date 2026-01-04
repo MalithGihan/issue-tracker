@@ -76,7 +76,7 @@ export default function RegisterPage() {
   });
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-8">
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
           <button className="group flex items-center px-2 py-1 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
@@ -116,7 +116,7 @@ export default function RegisterPage() {
                 id="name"
                 name="name"
                 type="name"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.name && formik.errors.name
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -150,7 +150,7 @@ export default function RegisterPage() {
                 id="organization"
                 name="organization"
                 type="organization"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.organization && formik.errors.organization
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -218,7 +218,7 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.email && formik.errors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.password && formik.errors.password
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -294,7 +294,7 @@ export default function RegisterPage() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.confirmPassword &&
                   formik.errors.confirmPassword
                     ? "border-red-500 focus:ring-red-500"
@@ -326,7 +326,7 @@ export default function RegisterPage() {
             type="button"
             onClick={() => formik.handleSubmit()}
             disabled={isLoading || formik.isSubmitting}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
+            className="w-full flex items-center justify-center gap-2 py-2 md:py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
           >
             {isLoading || formik.isSubmitting ? (
               <>

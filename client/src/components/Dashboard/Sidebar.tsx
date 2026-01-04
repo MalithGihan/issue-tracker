@@ -5,6 +5,7 @@ import {
   Plus,
   BarChart3,
   Settings,
+  CircuitBoard,
 } from "lucide-react";
 import React from "react";
 
@@ -46,6 +47,7 @@ export default function Sidebar() {
         </div>
         <nav className="space-y-1">
           <Item to="/app" label="Overview" icon={LayoutDashboard} end />
+          <Item to="/app/board" label="Kanban" icon={CircuitBoard} end />
           <Item to="/app/issues" label="Issues" icon={ListTodo} end />
           <Item to="/app/issues/new" label="Create Issue" icon={Plus} end />
           <Item to="/app/analytics" label="Analytics" icon={BarChart3} end />
