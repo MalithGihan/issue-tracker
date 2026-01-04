@@ -91,7 +91,7 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4 group cursor-pointer">
-              <img alt="logo" src='../../public/logo/logo.png' height={25} width={25}/>
+              <img alt="logo" src="/logo/logo.png" height={25} width={25}/>
               <span className="text-base font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent">
                 Issue Tracker
               </span>
