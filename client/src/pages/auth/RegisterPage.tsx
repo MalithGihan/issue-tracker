@@ -10,12 +10,18 @@ import {
   Home,
   PhoneCall,
   FileQuestion,
+  HelpCircle,
 } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useRegisterMutation } from "../../features/auth/authApi";
+import toast from "react-hot-toast";
+import { getRtkErrorMessage } from "../../lib/rtkError";
 
 const registerSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  organization: Yup.string().required("Organization is required"),
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
@@ -28,31 +34,49 @@ const registerSchema = Yup.object({
 });
 
 export default function RegisterPage() {
+  const nav = useNavigate();
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [openModel, setOpenModel] = useState(false);
+
+  const [registerUser, { isLoading }] = useRegisterMutation();
 
   const formik = useFormik({
     initialValues: {
+      name: "",
+      organization: "",
       email: "",
       password: "",
       confirmPassword: "",
     },
     validationSchema: registerSchema,
-    onSubmit: async (values) => {
-      setIsLoading(true);
+    validateOnBlur: true,
+    validateOnChange: true,
 
-      // Simulate API call - Replace with your actual register logic
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log("Form values:", values);
-        alert(`Account created!\nEmail: ${values.email}`);
-      }, 1500);
+    onSubmit: async (values, helpers) => {
+      try {
+        const payload = {
+          name: values.name,
+          organization: values.organization,
+          email: values.email.trim().toLowerCase(),
+          password: values.password,
+        };
+
+        await registerUser(payload).unwrap();
+
+        toast.success("Account created");
+        nav("/login", { replace: true }); // or nav("/login") if you prefer
+      } catch (err) {
+        toast.error(getRtkErrorMessage(err, "Register failed"));
+      } finally {
+        helpers.setSubmitting(false);
+      }
     },
   });
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-8">
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
           <button className="group flex items-center px-2 py-1 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
@@ -81,12 +105,111 @@ export default function RegisterPage() {
 
         <div className="space-y-5">
           <div className="space-y-2">
+            <label htmlFor="text" className="text-sm font-medium text-zinc-700">
+              Name
+            </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                <Mail size={18} />
+              </div>
+              <input
+                id="name"
+                name="name"
+                type="name"
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
+                  formik.touched.name && formik.errors.name
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-zinc-200 focus:ring-zinc-900"
+                } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
+                placeholder="Johan Strim"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.touched.name && formik.errors.name && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle size={14} />
+                <span>{String(formik.errors.name)}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
             <label
               htmlFor="email"
               className="text-sm font-medium text-zinc-700"
             >
-              Email
+              Organization
             </label>
+            <div className="relative">
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                <Mail size={18} />
+              </div>
+              <input
+                id="organization"
+                name="organization"
+                type="organization"
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
+                  formik.touched.organization && formik.errors.organization
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-zinc-200 focus:ring-zinc-900"
+                } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
+                placeholder="Example PVT ltd"
+                value={formik.values.organization}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+            </div>
+            {formik.touched.organization && formik.errors.organization && (
+              <div className="flex items-center gap-1 text-sm text-red-600">
+                <AlertCircle size={14} />
+                <span>{String(formik.errors.organization)}</span>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex flex-row justify-between items-center">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-zinc-700"
+              >
+                Organization Email
+              </label>
+              <button
+                type="button"
+                className="px-2"
+                onClick={() => setOpenModel((prev: boolean) => !prev)}
+              >
+                <HelpCircle
+                  size={15}
+                  className={`text-blue-600 transition-transform duration-300 ${
+                    openModel ? "rotate-180" : "rotate-0"
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Animated info box */}
+            <div
+              className={`
+          overflow-hidden transition-all duration-300 ease-out origin-top
+          ${
+            openModel
+              ? "max-h-40 opacity-100 scale-y-100 mb-2"
+              : "max-h-0 opacity-0 scale-y-95 mb-0"
+          }
+        `}
+            >
+              <div className="p-4 bg-blue-100 rounded-md">
+                <p className="text-xs font-semibold text-blue-600">
+                  You want to include your company/ Organization email for this.
+                  Don't use your personal email for this.
+                </p>
+              </div>
+            </div>
+
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Mail size={18} />
@@ -95,7 +218,7 @@ export default function RegisterPage() {
                 id="email"
                 name="email"
                 type="email"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.email && formik.errors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -106,14 +229,15 @@ export default function RegisterPage() {
                 onBlur={formik.handleBlur}
               />
             </div>
+
+            {/* Animated error message */}
             {formik.touched.email && formik.errors.email && (
-              <div className="flex items-center gap-1 text-sm text-red-600">
+              <div className="flex items-center gap-1 text-sm text-red-600 animate-in fade-in slide-in-from-top-1 duration-200">
                 <AlertCircle size={14} />
                 <span>{String(formik.errors.email)}</span>
               </div>
             )}
           </div>
-
           <div className="space-y-2">
             <label
               htmlFor="password"
@@ -129,7 +253,7 @@ export default function RegisterPage() {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.password && formik.errors.password
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -170,7 +294,7 @@ export default function RegisterPage() {
                 id="confirmPassword"
                 name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.confirmPassword &&
                   formik.errors.confirmPassword
                     ? "border-red-500 focus:ring-red-500"
@@ -201,10 +325,10 @@ export default function RegisterPage() {
           <button
             type="button"
             onClick={() => formik.handleSubmit()}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
+            disabled={isLoading || formik.isSubmitting}
+            className="w-full flex items-center justify-center gap-2 py-2 md:py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
           >
-            {isLoading ? (
+            {isLoading || formik.isSubmitting ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Creating account...</span>
@@ -277,15 +401,15 @@ export default function RegisterPage() {
             </a>
           </div>
         </div>
+
         <div className="absolute flex flex-row gap-2 bottom-8 right-4 md:right-8">
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <PhoneCall className="w-4 h-4 text-black"/>
+            <PhoneCall className="w-4 h-4 text-black" />
           </button>
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <FileQuestion className="w-4 h-4 text-black"/>
+            <FileQuestion className="w-4 h-4 text-black" />
           </button>
         </div>
-
       </div>
     </div>
   );

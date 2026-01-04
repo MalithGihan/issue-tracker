@@ -1,27 +1,47 @@
 import { baseApi } from "../../app/baseApi";
 
+export type PublicUser = {
+  id: string;
+  name: string;
+  organization: string;
+  email: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 type Ok = { ok: boolean };
-type Me = { ok: boolean; userId: string };
+type AuthOk = { ok: boolean; user: PublicUser };
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: (b) => ({
-    register: b.mutation<Ok, { email: string; password: string }>({
+    register: b.mutation<
+      AuthOk,
+      { name: string; organization: string; email: string; password: string }
+    >({
       query: (body) => ({ url: "/auth/register", method: "POST", body }),
       invalidatesTags: ["Me"],
     }),
-    login: b.mutation<Ok, { email: string; password: string }>({
+
+    login: b.mutation<AuthOk, { email: string; password: string }>({
       query: (body) => ({ url: "/auth/login", method: "POST", body }),
       invalidatesTags: ["Me"],
     }),
+
     logout: b.mutation<Ok, void>({
       query: () => ({ url: "/auth/logout", method: "POST" }),
       invalidatesTags: ["Me"],
     }),
-    me: b.query<Me, void>({
+
+    me: b.query<AuthOk, void>({
       query: () => ({ url: "/auth/me" }),
       providesTags: ["Me"],
     }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useLogoutMutation, useMeQuery } = authApi;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useMeQuery,
+} = authApi;

@@ -13,7 +13,10 @@ import {
 } from "lucide-react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLoginMutation } from "../../features/auth/authApi";
+import { getRtkErrorMessage } from "../../lib/rtkError";
+import toast from "react-hot-toast";
 
 const loginSchema = Yup.object({
   email: Yup.string()
@@ -25,29 +28,38 @@ const loginSchema = Yup.object({
 });
 
 export default function LoginPage() {
+ const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [login, { isLoading }] = useLoginMutation();
 
   const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
+    initialValues: { email: "", password: "" },
     validationSchema: loginSchema,
-    onSubmit: async (values) => {
-      setIsLoading(true);
+    validateOnBlur: true,
+    validateOnChange: true,
 
-      // Simulate API call - Replace with your actual login logic
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log("Form values:", values);
-        alert(`Login submitted!\nEmail: ${values.email}`);
-      }, 1500);
+    onSubmit: async (values, helpers) => {
+      try {
+        const payload = {
+          email: values.email.trim().toLowerCase(),
+          password: values.password,
+        };
+
+        await login(payload).unwrap();
+
+        toast.success("Logged in");
+        nav("/app", { replace: true });
+      } catch (err) {
+        toast.error(getRtkErrorMessage(err, "Login failed"));
+      } finally {
+        helpers.setSubmitting(false);
+      }
     },
   });
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-8">
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
           <button className="group flex items-center px-3 py-2 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
@@ -90,7 +102,7 @@ export default function LoginPage() {
                 id="email"
                 name="email"
                 type="email"
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.email && formik.errors.email
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -132,7 +144,7 @@ export default function LoginPage() {
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${
+                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
                   formik.touched.password && formik.errors.password
                     ? "border-red-500 focus:ring-red-500"
                     : "border-zinc-200 focus:ring-zinc-900"
@@ -161,10 +173,10 @@ export default function LoginPage() {
           <button
             type="button"
             onClick={() => formik.handleSubmit()}
-            disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
+            disabled={isLoading || formik.isSubmitting}
+            className="w-full flex items-center justify-center gap-2 py-2 md:py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
           >
-            {isLoading ? (
+            {isLoading || formik.isSubmitting ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Signing in...</span>

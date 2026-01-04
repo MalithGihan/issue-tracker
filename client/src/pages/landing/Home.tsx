@@ -55,11 +55,11 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen mx-auto bg-white text-black overflow-hidden">
+    <div className="min-h-screen mx-auto bg-white text-black">
       <div
         className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
         style={{
-          background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
+          background: `radial-gradient(400px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
         }}
       />
 
@@ -102,7 +102,7 @@ export default function HomePage() {
 
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-10 my-20">
             {stats.map((stat, index) => (
-              <div key={index} className="flex items-center gap-8 md:gap-10">
+              <div key={`${stat.label}-${stat.suffix}`}  className="flex items-center gap-8 md:gap-10">
                 <div
                   className="cursor-pointer flex flex-col min-w-30 text-center"
                 >
@@ -148,9 +148,8 @@ export default function HomePage() {
 
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
             {features.map((feature, index) => (
-              <>
+              <div key={`${feature.title}-${feature.description}`} >
                 <div
-                  key={index}
                   className="relative flex flex-col justify-center items-center p-8 cursor-pointer"
                 >
                   <div className="relative">
@@ -175,7 +174,7 @@ export default function HomePage() {
                 {index < features.length - 1 && (
                   <div className="hidden md:block w-px self-stretch bg-linear-to-b from-transparent via-black/20 to-transparent" />
                 )}
-              </>
+              </div>
             ))}
           </div>
         </div>

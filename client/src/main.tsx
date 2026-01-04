@@ -12,10 +12,10 @@ import AppBootLoader from "./components/Loader/AppBootLoader";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
     <ThemeProvider>
-      <AppBootLoader ms={1000}>
+      <AppBootLoader ms={700}>
       <RouterProvider router={router} />
       </AppBootLoader>
-      <Toaster position="top-right" />
+      <Toaster position="bottom-right" />
     </ThemeProvider>
   </Provider>
 );

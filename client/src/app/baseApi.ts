@@ -8,7 +8,6 @@ const rawBaseQuery = fetchBaseQuery({
 const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
   const result = await rawBaseQuery(args, api, extraOptions);
 
-  // Try refresh once if unauthorized
   if (result.error && result.error.status === 401) {
     await rawBaseQuery({ url: "/auth/refresh", method: "POST" }, api, extraOptions);
     return rawBaseQuery(args, api, extraOptions);
@@ -20,6 +19,6 @@ const baseQuery: typeof rawBaseQuery = async (args, api, extraOptions) => {
 export const baseApi = createApi({
   reducerPath: "api",
   baseQuery,
-  tagTypes: ["Me", "Issues"],
+  tagTypes: ["Me", "Issues", "Assignees"],
   endpoints: () => ({}),
 });
