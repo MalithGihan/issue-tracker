@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import {
   Eye,
   EyeOff,
@@ -28,10 +29,20 @@ const loginSchema = Yup.object({
 });
 
 export default function LoginPage() {
- const nav = useNavigate();
+  const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [login, { isLoading }] = useLoginMutation();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: any) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
@@ -60,6 +71,13 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-8">
+      <div
+        className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(400px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
+        }}
+      />
+
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
           <button className="group flex items-center px-3 py-2 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
@@ -73,12 +91,7 @@ export default function LoginPage() {
 
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 mb-4">
-            <img
-              src="/logo/logo.png"
-              alt="logo"
-              width={40}
-              height={40}
-            />
+            <img src="/logo/logo.png" alt="logo" width={40} height={40} />
           </div>
           <h1 className="text-xl font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent mb-2">
             Welcome back
@@ -94,7 +107,7 @@ export default function LoginPage() {
             >
               Email
             </label>
-            <div className="relative">
+            <div className="relative mt-2">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Mail size={18} />
               </div>
@@ -251,10 +264,10 @@ export default function LoginPage() {
         </div>
         <div className="absolute flex flex-row gap-2 bottom-3 md:bottom-8 right-4 md:right-8">
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <PhoneCall className="w-4 h-4 text-black"/>
+            <PhoneCall className="w-4 h-4 text-black" />
           </button>
           <button className="group flex items-center px-3 py-3 rounded-full bg-black/5 hover:bg-black/10 hover:border-gray-200 transition-all duration-200">
-            <FileQuestion className="w-4 h-4 text-black"/>
+            <FileQuestion className="w-4 h-4 text-black" />
           </button>
         </div>
       </div>

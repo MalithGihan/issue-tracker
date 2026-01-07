@@ -1,4 +1,5 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
 import {
   Eye,
   EyeOff,
@@ -41,6 +42,16 @@ export default function RegisterPage() {
   const [openModel, setOpenModel] = useState(false);
 
   const [registerUser, { isLoading }] = useRegisterMutation();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: any) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   const formik = useFormik({
     initialValues: {
@@ -77,6 +88,14 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-8">
+
+      <div
+        className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(400px at ${mousePosition.x}px ${mousePosition.y}px, rgba(6, 182, 212, 0.15), transparent 80%)`,
+        }}
+      />
+
       <div className="w-full max-w-md">
         <Link to="/" className="absolute top-8 left-4 md:left-8 ">
           <button className="group flex items-center px-2 py-1 border-2 text-sm border-gray-100 text-black font-semibold rounded-xl hover:bg-black/5 hover:border-gray-200 transition-all duration-200">
@@ -108,7 +127,7 @@ export default function RegisterPage() {
             <label htmlFor="text" className="text-sm font-medium text-zinc-700">
               Name
             </label>
-            <div className="relative">
+            <div className="relative mt-2">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Mail size={18} />
               </div>
@@ -142,7 +161,7 @@ export default function RegisterPage() {
             >
               Organization
             </label>
-            <div className="relative">
+            <div className="relative mt-2">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Mail size={18} />
               </div>
@@ -245,7 +264,7 @@ export default function RegisterPage() {
             >
               Password
             </label>
-            <div className="relative">
+            <div className="relative mt-2">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Lock size={18} />
               </div>
@@ -286,7 +305,7 @@ export default function RegisterPage() {
             >
               Confirm Password
             </label>
-            <div className="relative">
+            <div className="relative mt-2">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
                 <Lock size={18} />
               </div>
