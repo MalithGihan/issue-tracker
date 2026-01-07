@@ -47,7 +47,6 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 backdrop-blur-xl bg-white border-b border-white/20 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link 
             to="/" 
             className="flex items-center gap-2 font-bold text-lg text-white group"
@@ -70,7 +69,7 @@ export default function Navbar() {
                 
                 {/* Tooltip */}
                 {hoveredItem === item.path && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-white border rounded-lg shadow-xl whitespace-nowrap animate-fadeIn">
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-2 bg-white border border-white rounded-lg shadow-xl whitespace-nowrap animate-fadeIn">
                     <div className="text-xs text-zinc-400 mb-1">{item.category}</div>
                     <div className="text-[10px] text-black/60">{item.description}</div>
                     <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-white border-l border-t border-white rotate-45"></div>

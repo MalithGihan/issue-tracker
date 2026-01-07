@@ -25,6 +25,7 @@ import {
   type IssueStatus,
 } from "../../features/issues/issuesApi";
 import { downloadCsv } from "../../lib/csv";
+import toast from "react-hot-toast";
 
 export default function IssuesListPage() {
   const [sp, setSp] = useSearchParams();
@@ -35,8 +36,10 @@ export default function IssuesListPage() {
   const [qInput, setQInput] = useState(qFromUrl);
   const [labelInput, setLabelInput] = useState(labelFromUrl);
 
-  const [openDetails, setOpenDetails] = useState(false);
   const [id, setId] = useState("");
+  const [openDetails, setOpenDetails] = useState(false);
+  const [showDownloadConfirm, setShowDownloadConfirm] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => setQInput(qFromUrl), [qFromUrl]);
   useEffect(() => setLabelInput(labelFromUrl), [labelFromUrl]);
@@ -177,6 +180,35 @@ export default function IssuesListPage() {
     Boolean(status) ||
     Boolean(priority);
 
+  async function handleDownloadCsv() {
+    try {
+      setDownloading(true);
+
+      const issues = data?.issues ?? [];
+      const rows = issues.map((it: any) => ({
+        id: it._id,
+        title: it.title,
+        status: it.status,
+        priority: it.priority,
+        label: it.label ?? "",
+        assignedTo: it.assignFor?.name ?? it.assignFor ?? "",
+        createdBy: it.createdBy?.name ?? it.createdBy ?? "",
+        createdAt: it.createdAt,
+        updatedAt: it.updatedAt,
+      }));
+
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadCsv(`issues-${stamp}.csv`, rows);
+
+      toast.success("CSV downloaded");
+      setShowDownloadConfirm(false);
+    } catch {
+      toast.error("Download failed");
+    } finally {
+      setDownloading(false);
+    }
+  }
+
   return (
     <div className="space-y-6 max-w-full">
       {/* Header */}
@@ -188,39 +220,22 @@ export default function IssuesListPage() {
           </p>
         </div>
         <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => {
-            const issues = data?.issues ?? [];
+          <button
+            type="button"
+            onClick={() => setShowDownloadConfirm(true)}
+            className="inline-flex items-center gap-2 md:rounded-lg rounded-full border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-900 hover:bg-zinc-50 transition"
+          >
+            <Download size={15} />
+            <span className="hidden md:inline">Export CSV</span>
+          </button>
 
-            const rows = issues.map((it: any) => ({
-              id: it._id,
-              title: it.title,
-              status: it.status,
-              priority: it.priority,
-              label: it.label ?? "",
-              assignedTo: it.assignFor?.name ?? "",
-              createdBy: it.createdBy?.name ?? "",
-              createdAt: it.createdAt,
-              updatedAt: it.updatedAt,
-            }));
-
-            const stamp = new Date().toISOString().slice(0, 10);
-            downloadCsv(`issues-${stamp}.csv`, rows);
-          }}
-          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-900 hover:bg-zinc-50 transition"
-        >
-          <Download size={15}/>
-          Export CSV
-        </button>
-
-        <Link
-          to="/app/issues/new"
-          className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
-        >
-          <Plus size={16} />
-          New Issue
-        </Link>
+          <Link
+            to="/app/issues/new"
+            className="inline-flex items-center gap-2 md:rounded-lg rounded-full bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
+          >
+            <Plus size={16} />
+            <span className="hidden md:inline">New Issue</span>
+          </Link>
         </div>
       </div>
 
@@ -452,6 +467,52 @@ export default function IssuesListPage() {
 
       {openDetails && (
         <IssueDetailModal id={id} onClose={() => setOpenDetails(false)} />
+      )}
+
+      {showDownloadConfirm && (
+        <div
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-60 p-4"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4 mb-4">
+              <div className="rounded-full bg-green-100 p-3">
+                <Download size={24} className="text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+                  Download
+                </h3>
+                <p className="text-sm text-zinc-600">
+                  Are you sure you want to download CSV file?
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                type="button"
+                onClick={() => setShowDownloadConfirm(false)}
+                disabled={downloading}
+                className="px-4 py-2 rounded-lg border border-zinc-300 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDownloadCsv}
+                disabled={downloading}
+                className="px-4 py-2 rounded-lg bg-green-600 text-sm font-semibold text-white hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {downloading ? "Downloading..." : "Download"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {meta && meta.pages > 1 && (

@@ -3,7 +3,6 @@ import MarketingLayout from "../layouts/MarketingLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "../components/Dashboard/ProtectedRoute";
 
-import PlaceholderPage from "../pages/public/PlaceholderPage";
 import DashboardHome from "../pages/app/DashboardHome";
 import AuthLayout from "../layouts/AuthLayout";
 import LoginPage from "../pages/auth/LoginPage";
@@ -17,6 +16,9 @@ import ErrorPage from "../pages/error/ErrorPage";
 import NotFoundPage from "../pages/error/NotFoundPage";
 import HomePage from "../pages/landing/Home";
 import KanbanBoardPage from "../pages/app/KanbanBoardPage";
+import FeaturesPage from "../pages/landing/Features";
+import Pricing from "../pages/landing/Pricing";
+import ContactPage from "../pages/landing/ContactPage";
 
 export const router = createBrowserRouter([
   {
@@ -24,9 +26,9 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <HomePage /> },
-      { path: "/features", element: <PlaceholderPage title="Features" /> },
-      { path: "/pricing", element: <PlaceholderPage title="Pricing" /> },
-      { path: "/contact", element: <PlaceholderPage title="Contact" /> },
+      { path: "/features", element: <FeaturesPage /> },
+      { path: "/pricing", element: <Pricing /> },
+      { path: "/contact", element: <ContactPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

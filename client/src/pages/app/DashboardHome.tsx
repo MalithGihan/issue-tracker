@@ -107,7 +107,9 @@ export default function DashboardHome() {
   const total = open + inProgress + resolved + closed;
 
   const assignedList = (assigned as any)?.issues ?? [];
-  const assignedTotal = Number((assigned as any)?.meta?.total ?? assignedList.length ?? 0);
+  const assignedTotal = Number(
+    (assigned as any)?.meta?.total ?? assignedList.length ?? 0
+  );
 
   return (
     <div className="space-y-8 max-w-full">
@@ -121,10 +123,10 @@ export default function DashboardHome() {
         </div>
         <Link
           to="/app/issues"
-          className="inline-flex items-center gap-2 rounded-lg bg-black px-1 md:px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors"
+          className="inline-flex items-center gap-2 md:rounded-lg rounded-full bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
         >
           <Eye size={16} />
-          View All Issues
+          <span className="hidden md:inline">View All Issues</span>
         </Link>
       </div>
 
@@ -132,7 +134,10 @@ export default function DashboardHome() {
       {isLoading && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-zinc-200 bg-white p-6">
+            <div
+              key={i}
+              className="rounded-xl border border-zinc-200 bg-white p-6"
+            >
               <Skeleton className="h-4 w-24" />
               <Skeleton className="mt-3 h-9 w-16" />
             </div>
@@ -148,9 +153,12 @@ export default function DashboardHome() {
               <AlertCircle size={20} className="text-red-500" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-red-900">Failed to load statistics</h3>
+              <h3 className="font-semibold text-red-900">
+                Failed to load statistics
+              </h3>
               <p className="mt-1 text-xs text-red-700">
-                There was an error loading your dashboard data. Please try again.
+                There was an error loading your dashboard data. Please try
+                again.
               </p>
               <button
                 className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 transition-colors"
@@ -185,7 +193,13 @@ export default function DashboardHome() {
               </div>
 
               <Link
-                to={myId ? `/app/issues?assignFor=${encodeURIComponent(myId)}&page=1&limit=10` : "/app/issues"}
+                to={
+                  myId
+                    ? `/app/issues?assignFor=${encodeURIComponent(
+                        myId
+                      )}&page=1&limit=10`
+                    : "/app/issues"
+                }
                 className="text-xs font-semibold text-black underline"
               >
                 View all
@@ -195,7 +209,10 @@ export default function DashboardHome() {
             {assignedLoading ? (
               <div className="mt-4 space-y-3">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="rounded-lg border border-zinc-200 p-4">
+                  <div
+                    key={i}
+                    className="rounded-lg border border-zinc-200 p-4"
+                  >
                     <Skeleton className="h-4 w-2/3" />
                     <Skeleton className="mt-2 h-3 w-1/3" />
                   </div>
@@ -228,7 +245,9 @@ export default function DashboardHome() {
                     className="w-full text-left rounded-lg border border-zinc-200 p-4 hover:bg-zinc-50 transition"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <div className="font-semibold text-zinc-900 text-sm">{it.title}</div>
+                      <div className="font-semibold text-zinc-900 text-sm">
+                        {it.title}
+                      </div>
                       <div className="text-xs text-zinc-500">
                         {new Date(it.updatedAt).toLocaleDateString()}
                       </div>
@@ -246,7 +265,9 @@ export default function DashboardHome() {
                         </span>
                       ) : null}
                       {it.createdBy?.name ? (
-                        <span className="text-zinc-500">• Created by {it.createdBy.name}</span>
+                        <span className="text-zinc-500">
+                          • Created by {it.createdBy.name}
+                        </span>
                       ) : null}
                     </div>
                   </button>

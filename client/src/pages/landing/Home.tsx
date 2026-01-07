@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import {
   Zap,
-  CheckCircle2,
   ArrowRight,
   BarChart3,
   Users,
@@ -11,6 +10,9 @@ import {
   Github,
 } from "lucide-react";
 import { AnimatedCounter } from "../../components/Home/AnimationCounter";
+import BottomButtonSet from "../../components/Home/BottomButtonSet";
+import FeatureCard from "../../components/Home/FeatueCard";
+import SubTitle from "../../components/Home/SubTitle";
 
 export default function HomePage() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -48,10 +50,10 @@ export default function HomePage() {
   ];
 
   const stats = [
-    { number: "10K+", label: "Active Users" , suffix: '+'},
-    { number: "99.9%", label: "Uptime" , suffix: '%'},
-    { number: "50K+", label: "Issues Resolved" , suffix: '+'},
-    { number: "24/7", label: "Support" , suffix: '/7' },
+    { number: "10K+", label: "Active Users", suffix: "+" },
+    { number: "99.9%", label: "Uptime", suffix: "%" },
+    { number: "50K+", label: "Issues Resolved", suffix: "+" },
+    { number: "24/7", label: "Support", suffix: "/7" },
   ];
 
   return (
@@ -102,10 +104,11 @@ export default function HomePage() {
 
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-10 my-20">
             {stats.map((stat, index) => (
-              <div key={`${stat.label}-${stat.suffix}`}  className="flex items-center gap-8 md:gap-10">
-                <div
-                  className="cursor-pointer flex flex-col min-w-30 text-center"
-                >
+              <div
+                key={`${stat.label}-${stat.suffix}`}
+                className="flex items-center gap-8 md:gap-10"
+              >
+                <div className="cursor-pointer flex flex-col min-w-30 text-center">
                   <div className="text-2xl sm:text-4xl font-bold bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent group-hover:scale-105 transition-transform duration-200">
                     <AnimatedCounter
                       end={stat.number}
@@ -133,43 +136,16 @@ export default function HomePage() {
 
       <section className="relative py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto">
-          <div className="text-start mb-20">
-            <h2 className="text-xl sm:text-3xl font-bold mb-4">
-              Built for{" "}
-              <span className="bg-linear-to-r from-cyan-400 to-green-300 bg-clip-text text-transparent">
-                Performance
-              </span>
-            </h2>
-            <p className="text-zinc-400 text-sm">
-              Everything you need to manage issues effectively
-            </p>
-            <div className="hidden md:block h-px w-full my-4 bg-linear-to-b from-transparent via-black/20 to-transparent" />
-          </div>
+          <SubTitle title1="Built for" title2="Performance" description="Everything you need to manage issues effectively"/>
 
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
             {features.map((feature, index) => (
-              <div key={`${feature.title}-${feature.description}`} >
-                <div
-                  className="relative flex flex-col justify-center items-center p-8 cursor-pointer"
-                >
-                  <div className="relative">
-                    <div className="w-12 h-12 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
-                      <feature.icon className="w-6 h-6 text-black" />
-                    </div>
-
-                    <h3 className="text-md font-semibold mb-2 text-black">
-                      {feature.title}
-                    </h3>
-                    <p className="text-zinc-400 text-sm font-base">
-                      {feature.description}
-                    </p>
-
-                    <div className="mt-4 flex items-center gap-2 text-black/60 transition-opacity duration-300">
-                      <span className="text-sm">Learn more</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
-                    </div>
-                  </div>
-                </div>
+              <div key={`${feature.title}-${feature.description}`}>
+                <FeatureCard
+                  icon={feature.icon}
+                  description={feature.description}
+                  title={feature.title}
+                />
 
                 {index < features.length - 1 && (
                   <div className="hidden md:block w-px self-stretch bg-linear-to-b from-transparent via-black/20 to-transparent" />
@@ -180,34 +156,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="relative py-12 px-4 sm:px-6 lg:px-8 mb-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="relative p-12 bg-gray-50 shadow-2xs border border-white/10 rounded-xl overflow-hidden">
-            <div className="relative text-center">
-              <h2 className="text-2xl sm:text-2xl font-bold mb-4">
-                Ready to get started?
-              </h2>
-              <p className="text-zinc-400 mb-8 max-w-xl mx-auto text-sm">
-                Join thousands of teams already using Issue Tracker to
-                streamline their workflow
-              </p>
-
-              <div className="flex flex-col sm:flex-row items-center text-sm justify-center gap-4">
-                <button className="group px-8 py-4 bg-linear-to-r from-cyan-400 to-green-300 text-white font-semibold rounded-xl hover:from-cyan-300 hover:to-green-200 transform transition-all duration-200 shadow-lg shadow-cyan-400/20">
-                  <span className="flex items-center gap-2">
-                    Start Free Trial
-                    <CheckCircle2 className="w-5 h-5" />
-                  </span>
-                </button>
-
-                <button className="px-8 py-4 text-black font-semibold rounded-xl border border-gray-200 hover:bg-black/5 transition-all duration-200">
-                  Schedule a Demo
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <BottomButtonSet
+        topic={"Ready to get started?"}
+        description={
+          "Join thousands of teams already using Issue Tracker to streamline their workflow"
+        }
+        button1Title={"Start Free Trial"}
+        button2Title={"Schedule a Demo"}
+      />
 
       <style>{`
         @keyframes pulse-slow {

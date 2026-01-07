@@ -23,7 +23,7 @@ type FormValues = {
   title: string;
   description: string;
   label: string;
-  assignFor: string; // "" means unassigned
+  assignFor: string; 
   status: IssueStatus;
   priority: IssuePriority;
 };

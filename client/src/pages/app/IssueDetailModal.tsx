@@ -69,7 +69,6 @@ export default function IssueDetailModal({ id, onClose }: Props) {
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
-  // ✅ FIX: delete using `id` (prop), not `it._id` (out of scope)
   const onDelete = async () => {
     if (!id) return;
 
@@ -282,7 +281,6 @@ export default function IssueDetailModal({ id, onClose }: Props) {
         </div>
       </div>
 
-      {/* ✅ FIX: stop click bubbling so the backdrop doesn't close the modal */}
       {showDeleteConfirm && (
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-60 p-4"
