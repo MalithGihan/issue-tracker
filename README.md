@@ -13,7 +13,7 @@ A full-stack Issue Tracker web app with authentication + Issue CRUD (Create / Re
 - Password: **user1234**
 
 ## Full Documentation (PDF)
-See: **docs/Issue-Tracker-Project-Documentation.pdf**
+See: **docs/info/Issue-Tracker-Project-Documentation.pdf**
 
 ---
 
