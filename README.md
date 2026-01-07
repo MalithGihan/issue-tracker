@@ -76,25 +76,25 @@ Open:
 
 ---
 
-### 4) Tech Stack & Libraries
+## Tech Stack & Libraries
 
-## Frontend
--React + TypeScript (Vite)
--React Router
--Tailwind CSS
--Redux Toolkit + RTK Query (API + caching)
--Formik + Yup / Zod (forms + validation)
--react-hot-toast (notifications)
--lucide-react (icons)
--Drag & Drop for Kanban (your library name here)
+### Frontend
+- React + TypeScript (Vite)
+- React Router
+- Tailwind CSS
+- Redux Toolkit + RTK Query (API + caching)
+- Formik + Yup (forms + validation)  <!-- or Zod, choose one -->
+- react-hot-toast (notifications)
+- lucide-react (icons)
+- Kanban drag & drop: <LIBRARY_NAME>
 
-## Backend
--Node.js + Express + TypeScript
--MongoDB + Mongoose
--Auth: JWT (Access/Refresh) in HttpOnly Cookies
--Security: Helmet, CORS, rate limiting, HPP, mongo-sanitize, CSRF guard
--Logging: Pino (and/or request logging middleware)
--Monitoring: Prometheus metrics endpoint + Grafana dashboards
+### Backend
+- Node.js + Express + TypeScript
+- MongoDB + Mongoose
+- Authentication: JWT (access/refresh) stored in HttpOnly cookies
+- Security: Helmet, CORS, rate limiting, HPP, express-mongo-sanitize, CSRF protection
+- Logging: Pino (request logging)
+- Monitoring: Prometheus metrics endpoint + Grafana dashboards
 
 ---
 
