@@ -1,5 +1,7 @@
 # Issue Tracker (CRUD)
 
+![Issue Tracker Preview](docs/screenshots/preview.png)
+
 A full-stack Issue Tracker web app with authentication + Issue CRUD (Create / Read / Update / Delete), search/filter, and export.
 
 ## Live Demo
@@ -30,8 +32,8 @@ MONGO_URI=your_mongodb_uri
 CLIENT_ORIGIN=http://localhost:5173
 SERVER_PORT=4000
 
-JWT_ACCESS_SECRET=your_access_secret (Make a random string)
-JWT_REFRESH_SECRET=your_refresh_secret (Make a random string)
+JWT_ACCESS_SECRET=your_access_secret # Make a random string
+JWT_REFRESH_SECRET=your_refresh_secret # Make a random string
 ACCESS_MINUTES=15
 REFRESH_DAYS=7
 
