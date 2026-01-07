@@ -74,6 +74,30 @@ Open:
 - Backend hosted on **Render**
 - Frontend hosted on **Vercel**
 
+---
+
+## Tech Stack & Libraries
+
+### Frontend
+- React + TypeScript (Vite)
+- React Router
+- Tailwind CSS
+- Redux Toolkit + RTK Query (API + caching)
+- Formik + Yup (forms + validation)  <!-- or Zod, choose one -->
+- react-hot-toast (notifications)
+- lucide-react (icons)
+- Kanban drag & drop: @dnd-kit/core
+
+### Backend
+- Node.js + Express + TypeScript
+- MongoDB + Mongoose
+- Authentication: JWT (access/refresh) stored in HttpOnly cookies
+- Security: Helmet, CORS, rate limiting, HPP, express-mongo-sanitize, CSRF protection
+- Logging: Pino (request logging)
+- Monitoring: Prometheus metrics endpoint + Grafana dashboards
+
+---
+
 If you get **404 on refresh** (example: `/login`), configure a Vercel SPA rewrite (see PDF).
 
 If login works on desktop but not on **real iPhone**, use an **API proxy rewrite** on Vercel so cookies become **first-party** (see PDF).
