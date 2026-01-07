@@ -44,11 +44,7 @@ export default function Topbar({
 
       <div className="flex flex-row items-center gap-2 lg:flex-none ">
         <img
-          src={
-            theme === "dark"
-              ? "../../../public/logo/logo_white.png"
-              : "../../../public/logo/logo.png"
-          }
+          src="/logo/logo.png"
           alt="logo"
           width={15}
           height={15}
