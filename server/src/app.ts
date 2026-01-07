@@ -41,7 +41,7 @@ app.use(csrfGuard);
 
 app.use("/api", apiRouter);
 
-app.get("/api/v1/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 app.get("/metrics", async (_req, res) => {
   res.set("Content-Type", "text/plain; version=0.0.4");
