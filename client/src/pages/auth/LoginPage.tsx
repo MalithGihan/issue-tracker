@@ -118,7 +118,7 @@ export default function LoginPage() {
 
         <div className="space-y-5">
           <form onSubmit={formik.handleSubmit}>
-            <div className="space-y-2">
+            <div className="space-y-2 mb-4">
               <label
                 htmlFor="email"
                 className="text-sm font-medium text-zinc-700"
