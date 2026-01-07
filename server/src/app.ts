@@ -11,6 +11,7 @@ import { httpMetrics } from "./monitoring/httpMetrics";
 import { metricsText } from "./monitoring/metrics";
 
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = String(env.CLIENT_ORIGIN || "")
   .split(",")

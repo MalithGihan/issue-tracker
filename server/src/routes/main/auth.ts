@@ -12,10 +12,9 @@ import {
   hashToken,
 } from "../../utils/tokens";
 import rateLimit from "express-rate-limit";
+import { loginLimiter, refreshLimiter } from "../../middleware/loginLimiter";
 
 const router = Router();
-const loginLimiter = rateLimit({ windowMs: 2 * 60 * 1000, max: 5 });
-const refreshLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 30 });
 
 function setAuthCookies(res: any, accessToken: string, refreshToken: string) {
   res.cookie("access_token", accessToken, {

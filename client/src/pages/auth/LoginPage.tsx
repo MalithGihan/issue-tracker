@@ -31,6 +31,7 @@ const loginSchema = Yup.object({
 export default function LoginPage() {
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [cooldown, setCooldown] = useState<number>(0);
 
   const [login, { isLoading }] = useLoginMutation();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -43,6 +44,12 @@ export default function LoginPage() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setInterval(() => setCooldown((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [cooldown]);
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
@@ -61,8 +68,18 @@ export default function LoginPage() {
 
         toast.success("Logged in");
         nav("/app", { replace: true });
-      } catch (err) {
-        toast.error(getRtkErrorMessage(err, "Login failed"));
+      } catch (err: any) {
+        const retry =
+          err?.status === 429
+            ? Number(err?.data?.retryAfterSeconds ?? err?.data?.retryAfter ?? 0)
+            : 0;
+
+        if (retry > 0) {
+          setCooldown(retry);
+          toast.error(`Too many attempts. Try again in ${retry}s`);
+        } else {
+          toast.error(getRtkErrorMessage(err, "Login failed"));
+        }
       } finally {
         helpers.setSubmitting(false);
       }
@@ -100,96 +117,100 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-5">
-          <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium text-zinc-700"
-            >
-              Email
-            </label>
-            <div className="relative mt-2">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Mail size={18} />
-              </div>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
-                  formik.touched.email && formik.errors.email
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-zinc-200 focus:ring-zinc-900"
-                } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
-                placeholder="you@example.com"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-            </div>
-            {formik.touched.email && formik.errors.email && (
-              <div className="flex items-center gap-1 text-sm text-red-600">
-                <AlertCircle size={14} />
-                <span>{String(formik.errors.email)}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
+          <form onSubmit={formik.handleSubmit}>
+            <div className="space-y-2">
               <label
-                htmlFor="password"
+                htmlFor="email"
                 className="text-sm font-medium text-zinc-700"
               >
-                Password
+                Email
               </label>
-              <button
-                type="button"
-                className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
-                <Lock size={18} />
+              <div className="relative mt-2">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                  <Mail size={18} />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  className={`w-full pl-10 pr-4 py-1 md:py-3 rounded-md md:rounded-xl border ${
+                    formik.touched.email && formik.errors.email
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-zinc-200 focus:ring-zinc-900"
+                  } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
+                  placeholder="you@example.com"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
               </div>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
-                  formik.touched.password && formik.errors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-zinc-200 focus:ring-zinc-900"
-                } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
-                placeholder="Enter your password"
-                value={formik.values.password}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
+              {formik.touched.email && formik.errors.email && (
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <AlertCircle size={14} />
+                  <span>{String(formik.errors.email)}</span>
+                </div>
+              )}
             </div>
-            {formik.touched.password && formik.errors.password && (
-              <div className="flex items-center gap-1 text-sm text-red-600">
-                <AlertCircle size={14} />
-                <span>{String(formik.errors.password)}</span>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label
+                  htmlFor="password"
+                  className="text-sm font-medium text-zinc-700"
+                >
+                  Password
+                </label>
+                <button
+                  type="button"
+                  className="text-xs text-zinc-500 hover:text-zinc-900 transition-colors"
+                >
+                  Forgot password?
+                </button>
               </div>
-            )}
-          </div>
+              <div className="relative">
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">
+                  <Lock size={18} />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  className={`w-full pl-10 pr-12 py-1 md:py-3 rounded-md md:rounded-xl border ${
+                    formik.touched.password && formik.errors.password
+                      ? "border-red-500 focus:ring-red-500"
+                      : "border-zinc-200 focus:ring-zinc-900"
+                  } bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:border-transparent transition-all`}
+                  placeholder="Enter your password"
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              {formik.touched.password && formik.errors.password && (
+                <div className="flex items-center gap-1 text-sm text-red-600">
+                  <AlertCircle size={14} />
+                  <span>{String(formik.errors.password)}</span>
+                </div>
+              )}
+            </div>
+          </form>
 
           <button
-            type="button"
+            type="submit"
             onClick={() => formik.handleSubmit()}
-            disabled={isLoading || formik.isSubmitting}
+            disabled={cooldown > 0 || isLoading || formik.isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-2 md:py-3 px-4 rounded-xl bg-zinc-900 text-white font-medium hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all group"
           >
-            {isLoading || formik.isSubmitting ? (
+            {cooldown > 0 ? (
+              <span>Try again in {cooldown}s</span>
+            ) : isLoading || formik.isSubmitting ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Signing in...</span>
