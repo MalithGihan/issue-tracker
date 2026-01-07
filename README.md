@@ -86,7 +86,7 @@ Open:
 - Formik + Yup (forms + validation)  <!-- or Zod, choose one -->
 - react-hot-toast (notifications)
 - lucide-react (icons)
-- Kanban drag & drop: <LIBRARY_NAME>
+- Kanban drag & drop: @dnd-kit/core
 
 ### Backend
 - Node.js + Express + TypeScript
