@@ -19,13 +19,14 @@ const allowedOrigins = String(env.CLIENT_ORIGIN || "")
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    if (allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(new Error(`CORS blocked for origin: ${origin}`));
+    if (!origin) return cb(null, true); // Postman/curl
+    if (allowedOrigins.length === 0) return cb(null, true); // safety fallback
+    return cb(null, allowedOrigins.includes(origin));
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
@@ -42,6 +43,7 @@ app.use(csrfGuard);
 app.use("/api", apiRouter);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
+app.get("/api/v1/health", (_req, res) => res.json({ ok: true }));
 
 app.get("/metrics", async (_req, res) => {
   res.set("Content-Type", "text/plain; version=0.0.4");
