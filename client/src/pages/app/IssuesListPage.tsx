@@ -16,6 +16,7 @@ import {
   XCircle,
   Tag,
   User2,
+  Download,
 } from "lucide-react";
 import IssueDetailModal from "./IssueDetailModal";
 import {
@@ -23,6 +24,7 @@ import {
   type IssuePriority,
   type IssueStatus,
 } from "../../features/issues/issuesApi";
+import { downloadCsv } from "../../lib/csv";
 
 export default function IssuesListPage() {
   const [sp, setSp] = useSearchParams();
@@ -185,6 +187,33 @@ export default function IssuesListPage() {
             {meta?.total || 0} total issue{meta?.total !== 1 ? "s" : ""}
           </p>
         </div>
+        <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            const issues = data?.issues ?? [];
+
+            const rows = issues.map((it: any) => ({
+              id: it._id,
+              title: it.title,
+              status: it.status,
+              priority: it.priority,
+              label: it.label ?? "",
+              assignedTo: it.assignFor?.name ?? "",
+              createdBy: it.createdBy?.name ?? "",
+              createdAt: it.createdAt,
+              updatedAt: it.updatedAt,
+            }));
+
+            const stamp = new Date().toISOString().slice(0, 10);
+            downloadCsv(`issues-${stamp}.csv`, rows);
+          }}
+          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-xs font-semibold text-zinc-900 hover:bg-zinc-50 transition"
+        >
+          <Download size={15}/>
+          Export CSV
+        </button>
+
         <Link
           to="/app/issues/new"
           className="inline-flex items-center gap-2 rounded-lg bg-zinc-900 px-4 py-2.5 text-xs font-semibold text-white hover:bg-zinc-800 transition-colors shadow-sm"
@@ -192,6 +221,7 @@ export default function IssuesListPage() {
           <Plus size={16} />
           New Issue
         </Link>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row">
