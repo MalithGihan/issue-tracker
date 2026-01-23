@@ -29,7 +29,6 @@ export const router = createBrowserRouter([
       { path: "/features", element: <FeaturesPage /> },
       { path: "/pricing", element: <Pricing /> },
       { path: "/contact", element: <ContactPage /> },
-      { path: "*", element: <NotFoundPage /> },
     ],
   },
   {
@@ -48,7 +47,6 @@ export const router = createBrowserRouter([
       { path: "settings", element: <SettingsPage /> },
       { path: "issues/:id/edit", element: <IssueEditPage /> },
       { path: "board", element: <KanbanBoardPage /> },
-      { path: "*", element: <NotFoundPage /> },
     ],
   }, 
   {
@@ -56,7 +54,6 @@ export const router = createBrowserRouter([
     children: [
       { path: "/login", element: <LoginPage /> },
       { path: "/register", element: <RegisterPage /> },
-      { path: "*", element: <NotFoundPage /> },
     ],
   },
   { path: "*", element: <NotFoundPage /> },
